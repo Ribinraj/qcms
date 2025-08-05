@@ -1,0 +1,244 @@
+import 'package:flutter/material.dart';
+import 'package:qcms/presentation/screens/screen_loginpage/screen_loginpage.dart';
+import 'package:qcms/presentation/screens/screen_mainpage/screen_mainpage.dart';
+import 'package:qcms/presentation/screens/screen_onbording/screen_onboarding.dart';
+
+
+// SINGLE ROUTE GENERATOR CLASS - This is all you need!
+class AppRouter {
+  // Route name constants (keep them here in same class)
+  static const String main = '/main';
+  static const String login = '/login';
+  static const String profile = '/profile';
+  static const String cart = '/cart';
+  static const String dashboard = '/dashboard';
+  static const String onboarding = '/onboarding';
+  
+
+  // Single method to generate all routes
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    final args = settings.arguments as Map<String, dynamic>?;
+    
+    switch (settings.name) {
+            case onboarding:
+        return MaterialPageRoute(
+          builder: (_) => OnboardingScreen(),
+          settings: settings,
+        );
+      case main:
+        return MaterialPageRoute(
+          builder: (_) => ScreenMainpage(),
+          settings: settings,
+        );
+      
+      case login:
+        return MaterialPageRoute(
+          builder: (_) => ScreenLoginpage(), // Replace with your actual screen
+          settings: settings,
+        );
+      
+     // case profile:
+        // Example with parameter
+       // final userId = args?['userId'] as String?;
+        // return MaterialPageRoute(
+        //   builder: (_) => ProfileScreen(userId: userId),
+        //   settings: settings,
+        // );
+      
+      case cart:
+        // return MaterialPageRoute(
+        //   builder: (_) => CartScreen(), // Replace with your actual screen
+        //   settings: settings,
+        // );
+      
+      case dashboard:
+        // return MaterialPageRoute(
+        //   builder: (_) => DashboardScreen(), // Replace with your actual screen
+        //   settings: settings,
+        // );
+      
+      default:
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            appBar: AppBar(title: Text('Page Not Found')),
+            body: Center(child: Text('Route ${settings.name} not found')),
+          ),
+        );
+    }
+  }
+}
+
+// YOUR EXISTING CUSTOM NAVIGATION CLASS - Just update methods to use named routes
+class CustomNavigation {
+  CustomNavigation._();
+
+  /// Push a new named route
+  static Future<T?> pushNamed<T>(
+    BuildContext context, 
+    String routeName, {
+    Map<String, dynamic>? arguments,
+  }) {
+    return Navigator.pushNamed<T>(
+      context,
+      routeName,
+      arguments: arguments,
+    );
+  }
+
+  /// Push named route with custom transition
+  static Future<T?> pushNamedWithTransition<T>(
+    BuildContext context, 
+    String routeName, {
+    Map<String, dynamic>? arguments,
+    Offset beginOffset = const Offset(1.0, 0.0),
+    Curve curve = Curves.easeInOut,
+  }) {
+    return Navigator.push<T>(
+      context,
+      PageRouteBuilder<T>(
+        settings: RouteSettings(name: routeName, arguments: arguments),
+        pageBuilder: (context, animation, secondaryAnimation) {
+          // Use the route generator to get the correct widget
+          final route = AppRouter.generateRoute(
+            RouteSettings(name: routeName, arguments: arguments)
+          );
+          return (route as MaterialPageRoute).builder(context);
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var tween = Tween(begin: beginOffset, end: Offset.zero)
+              .chain(CurveTween(curve: curve));
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      )
+    );
+  }
+
+  /// Replace current route with named route
+  static Future<T?> pushReplacementNamed<T>(
+    BuildContext context, 
+    String routeName, {
+    Map<String, dynamic>? arguments,
+  }) {
+    return Navigator.pushReplacementNamed<T, dynamic>(
+      context,
+      routeName,
+      arguments: arguments,
+    );
+  }
+
+  /// Replace with custom transition
+  static Future<T?> pushReplacementNamedWithTransition<T>(
+    BuildContext context, 
+    String routeName, {
+    Map<String, dynamic>? arguments,
+    Offset beginOffset = const Offset(1.0, 0.0),
+    Curve curve = Curves.easeInOut,
+  }) {
+    return Navigator.pushReplacement<T, dynamic>(
+      context,
+      PageRouteBuilder<T>(
+        settings: RouteSettings(name: routeName, arguments: arguments),
+        pageBuilder: (context, animation, secondaryAnimation) {
+          final route = AppRouter.generateRoute(
+            RouteSettings(name: routeName, arguments: arguments)
+          );
+          return (route as MaterialPageRoute).builder(context);
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return SlideTransition(
+            position: animation.drive(
+              Tween(begin: beginOffset, end: Offset.zero)
+                  .chain(CurveTween(curve: curve))
+            ),
+            child: child,
+          );
+        },
+      )
+    );
+  }
+
+  /// Remove all routes and push new named route
+  static Future<T?> pushNamedAndRemoveUntil<T>(
+    BuildContext context, 
+    String routeName, {
+    Map<String, dynamic>? arguments,
+  }) {
+    return Navigator.pushNamedAndRemoveUntil<T>(
+      context,
+      routeName,
+      (route) => false, // Remove all previous routes
+      arguments: arguments,
+    );
+  }
+
+  /// Pop current route
+  static void pop<T>(BuildContext context, [T? result]) {
+    Navigator.pop<T>(context, result);
+  }
+
+  /// Check if can pop
+  static bool canPop(BuildContext context) {
+    return Navigator.canPop(context);
+  }
+}
+
+// Updated navigation functions for your specific use case
+// void navigateToMainPageNamed(BuildContext context, int pageIndex) {
+//   CustomNavigation.pushReplacementNamedWithTransition(
+//     context,
+//     AppRouter.main,
+//     arguments: {'pageIndex': pageIndex},
+//     beginOffset: Offset.zero, // For fade transition
+//   );
+
+//   Future.delayed(const Duration(milliseconds: 100), () {
+//     BlocProvider.of<BottomNavigationBloc>(context).add(
+//       NavigateToPageEvent(pageIndex: pageIndex),
+//     );
+//   });
+// }
+
+// void navigateToCartPageAfterLoginNamed(BuildContext context) {
+//   CustomNavigation.pushNamedAndRemoveUntil(
+//     context,
+//     AppRouter.main,
+//     arguments: {'pageIndex': 1}, // Cart tab
+//   );
+  
+//   Future.delayed(const Duration(milliseconds: 100), () {
+//     BlocProvider.of<BottomNavigationBloc>(context).add(
+//       NavigateToPageEvent(pageIndex: 1),
+//     );
+//   });
+// }
+
+/*
+USAGE EXAMPLES:
+
+// Simple navigation
+CustomNavigation.pushNamed(context, AppRouter.profile);
+
+// Navigation with parameters
+CustomNavigation.pushNamed(
+  context, 
+  AppRouter.profile, 
+  arguments: {'userId': '123', 'name': 'John'}
+);
+
+// Navigation with custom transition
+CustomNavigation.pushNamedWithTransition(
+  context, 
+  AppRouter.cart,
+  beginOffset: Offset(0.0, 1.0), // Slide from bottom
+  curve: Curves.bounceOut
+);
+
+// Replace current screen
+CustomNavigation.pushReplacementNamed(context, AppRouter.dashboard);
+
+// Clear all and go to login
+CustomNavigation.pushNamedAndRemoveUntil(context, AppRouter.login);
+*/
