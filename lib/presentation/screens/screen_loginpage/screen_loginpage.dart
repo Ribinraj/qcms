@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:qcms/core/appconstants.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
 import 'package:qcms/core/responsiveutils.dart';
 import 'package:qcms/widgets/custom_loginbutton.dart';
+import 'package:qcms/widgets/custom_routes.dart';
+import 'package:qcms/widgets/custom_textfield.dart';
 
 class ScreenLoginpage extends StatefulWidget {
   const ScreenLoginpage({super.key});
@@ -25,254 +28,213 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 245, 240, 235),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // or your desired color
+        statusBarIconBrightness: Brightness.dark, // for dark icons
+        statusBarBrightness: Brightness.light, // for iOS
+      ),
+      child: Scaffold(
+        backgroundColor: Color.fromARGB(255, 245, 240, 235),
 
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // ResponsiveSizedBox.height50,
-            ResponsiveSizedBox.height(8),
-            // QCMS Logo
-            SizedBox(
-              height: ResponsiveUtils.hp(8),
-              width: double.infinity,
-              child: Image.asset(
-                Appconstants.appLogo,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  // Fallback widget if image not found
-                  return Container(
-                    height: ResponsiveUtils.hp(8),
-                    width: ResponsiveUtils.wp(8),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // ResponsiveSizedBox.height50,
+              ResponsiveSizedBox.height(8),
+              // QCMS Logo
+              SizedBox(
+                height: ResponsiveUtils.hp(8),
+                width: double.infinity,
+                child: Image.asset(
+                  Appconstants.appLogo,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback widget if image not found
+                    return Container(
+                      height: ResponsiveUtils.hp(8),
+                      width: ResponsiveUtils.wp(8),
 
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color.fromARGB(255, 151, 149, 149),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(Icons.image, size: 30, color: Colors.grey[400]),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color.fromARGB(255, 151, 149, 149),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.image,
+                        size: 30,
+                        color: Colors.grey[400],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              ResponsiveSizedBox.height20,
+              TextStyles.subheadline(text: 'Welcome to QCMS'),
+
+              ResponsiveSizedBox.height(5),
+
+              // Mobile Number Input
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextStyles.body(text: 'Mobile Number*'),
+              ),
+
+              ResponsiveSizedBox.height10,
+              CustomTextField(
+                controller: _mobileController,
+                focusNode: _mobileFocusNode,
+                hintText: 'Please enter your Mobile Number',
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Mobile number is required';
+                  } else if (value.length != 10) {
+                    return 'Enter a valid 10-digit number';
+                  }
+                  return null;
+                },
+              ),
+
+              // Container(
+              //   decoration: BoxDecoration(
+              //     color: Color(0xFFE8E4F3),
+
+              //     border: Border(
+              //       bottom: BorderSide(color: Appcolors.kbordercolor, width: 1.5),
+              //     ),
+              //   ),
+              //   child: TextField(
+              //     controller: _mobileController,
+              //     focusNode: _mobileFocusNode,
+              //     keyboardType: TextInputType.phone,
+              //     style: TextStyle(fontSize: 16, color: Colors.black87),
+              //     decoration: InputDecoration(
+              //       hintText: 'Please enter your Mobile Number',
+              //       hintStyle: TextStyle(
+              //         color: const Color.fromARGB(255, 108, 106, 106),
+              //         fontSize: 15,
+              //       ),
+              //       border: InputBorder.none,
+              //       contentPadding: EdgeInsets.symmetric(
+              //         horizontal: 10,
+              //         vertical: 10,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              ResponsiveSizedBox.height30,
+
+              Customloginbutton(
+                onPressed: () {
+                  CustomNavigation.pushNamedWithTransition(
+                    context,
+                    AppRouter.verifyOTP,
+                    arguments: {
+                      'customerId': 'abc123',
+                      'mobileNumber': '9876543210',
+                    },
+                  );
+                },
+                text: 'Login',
+              ),
+              ResponsiveSizedBox.height10,
+              Divider(),
+              ResponsiveSizedBox.height20,
+
+              // Feature Cards
+              _buildFeatureCard(
+                icon: Icons.home_work_rounded,
+                title: 'Register Your Flat',
+                description:
+                    'If your flat is missing in the quarters, please register your flat details here.',
+                onTap: () {
+                  CustomNavigation.pushNamedWithTransition(
+                    context,
+                    AppRouter.register,
+                    beginOffset: Offset(0.0, 1.0), // Slide from bottom
+                    curve: Curves.bounceOut,
                   );
                 },
               ),
-            ),
 
-            ResponsiveSizedBox.height20,
-            TextStyles.subheadline(text: 'Welcome to QCMS'),
-
-            ResponsiveSizedBox.height(5),
-
-            // Mobile Number Input
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextStyles.body(text: 'Mobile Number*'),
-            ),
-
-            ResponsiveSizedBox.height10,
-
-            Container(
-              decoration: BoxDecoration(
-                color: Color(0xFFE8E4F3),
-
-                border: Border(
-                  bottom: BorderSide(color: Appcolors.kbordercolor, width: 1.5),
-                ),
+              _buildFeatureCard(
+                icon: Icons.business_center_rounded,
+                title: 'Enroll Your Division',
+                description:
+                    'If you wish to have your division enrolled in the system, please submit your details here.',
+                onTap: () {
+                  CustomNavigation.pushNamedWithTransition(
+                    context,
+                    AppRouter.requestform,
+                    beginOffset: Offset(0.0, 1.0), // Slide from bottom
+                    curve: Curves.bounceOut,
+                  );
+                },
               ),
-              child: TextField(
-                controller: _mobileController,
-                focusNode: _mobileFocusNode,
-                keyboardType: TextInputType.phone,
-                style: TextStyle(fontSize: 16, color: Colors.black87),
-                decoration: InputDecoration(
-                  hintText: 'Please enter your Mobile Number',
-                  hintStyle: TextStyle(
-                    color: const Color.fromARGB(255, 108, 106, 106),
-                    fontSize: 15,
+
+              ResponsiveSizedBox.height10,
+
+              // Footer with better styling
+              Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.6),
+                      Colors.white.withOpacity(0.4),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 10,
-                  ),
-                ),
-              ),
-            ),
-
-            ResponsiveSizedBox.height30,
-
-            Customloginbutton(onPressed: () {}, text: 'Login'),
-            ResponsiveSizedBox.height10,
-            Divider(),
-            ResponsiveSizedBox.height20,
-
-            // Feature Cards
-            _buildFeatureCard(
-              icon: Icons.home_work_rounded,
-              title: 'Register Your Flat',
-              description:
-                  'If your flat is missing in the quarters, please register your flat details here.',
-              onTap: () {},
-            ),
-
-            _buildFeatureCard(
-              icon: Icons.business_center_rounded,
-              title: 'Enroll Your Division',
-              description:
-                  'If you wish to have your division enrolled in the system, please submit your details here.',
-              onTap: () {},
-            ),
-
-            ResponsiveSizedBox.height10,
-
-            // Footer with better styling
-            Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withOpacity(0.6),
-                    Colors.white.withOpacity(0.4),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.privacy_tip_outlined,
-                      size: 16,
-                      color: Appcolors.kprimarycolor,
-                    ),
-                    label: TextStyles.body(
-                      text: 'Privacy Policy',
-                      color: Appcolors.kprimarycolor,
-                    ),
-                  ),
-                  Container(
-                    height: 20,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
                     width: 1,
-                    color: Appcolors.kprimarycolor.withOpacity(.4),
                   ),
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.info_outline,
-                      size: 16,
-                      color: Appcolors.kprimarycolor,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.privacy_tip_outlined,
+                        size: 16,
+                        color: Appcolors.kprimarycolor,
+                      ),
+                      label: TextStyles.body(
+                        text: 'Privacy Policy',
+                        color: Appcolors.kprimarycolor,
+                      ),
                     ),
-                    label: TextStyles.body(
-                      text: 'Disclaimer',
-                      color: Appcolors.kprimarycolor,
+                    Container(
+                      height: 20,
+                      width: 1,
+                      color: Appcolors.kprimarycolor.withOpacity(.4),
                     ),
-                  ),
-                ],
+                    TextButton.icon(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Appcolors.kprimarycolor,
+                      ),
+                      label: TextStyles.body(
+                        text: 'Disclaimer',
+                        color: Appcolors.kprimarycolor,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            SizedBox(height: 20),
-            // Divider(),
-            // ResponsiveSizedBox.height20,
-
-            // // Register Flat Section
-            // Text(
-            //   'If your flat is missing in the quarters, please\nregister your flat details here.',
-            //   textAlign: TextAlign.center,
-            //   style: TextStyle(
-            //     fontSize: 14,
-            //     color: Colors.black87,
-            //     height: 1.4,
-            //   ),
-            // ),
-
-            // ResponsiveSizedBox.height20,
-
-            // SizedBox(
-            //   width: double.infinity,
-            //   height: 45,
-            //   child: OutlinedButton(
-            //     onPressed: () {},
-            //     style: OutlinedButton.styleFrom(
-            //       side: BorderSide(color: Appcolors.kbordercolor, width: 1),
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(8),
-            //       ),
-            //     ),
-            //     child: TextStyles.body(
-            //       text: 'Register Now',
-            //       color: Appcolors.kprimarycolor,
-            //       weight: FontWeight.w600,
-            //     ),
-            //   ),
-            // ),
-
-            // ResponsiveSizedBox.height20,
-            // Divider(),
-            // ResponsiveSizedBox.height20,
-
-            // // Submit Division Details Section
-            // Text(
-            //   'If you wish to have your division enrolled in the\nsystem, please submit your details here.',
-            //   textAlign: TextAlign.center,
-            //   style: TextStyle(
-            //     fontSize: 15,
-            //     color: Colors.black87,
-            //     height: 1.4,
-            //   ),
-            // ),
-
-            // ResponsiveSizedBox.height10,
-
-            // TextButton(
-            //   onPressed: () {
-            //     // Handle submit details logic
-            //     print('Submit Details pressed');
-            //   },
-            //   child: Text(
-            //     'Submit Details',
-            //     style: TextStyle(
-            //       fontSize: 15,
-            //       fontWeight: FontWeight.w600,
-            //       color: Appcolors.kprimarycolor,
-            //     ),
-            //   ),
-            // ),
-
-            // Divider(),
-
-            // // Footer Links
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     TextButton(
-            //       onPressed: () {
-            //         // Handle privacy policy
-            //         print('Privacy Policy pressed');
-            //       },
-            //       child: TextStyles.body(text: 'Privacy Policy'),
-            //     ),
-            //     TextButton(
-            //       onPressed: () {
-            //         // Handle disclaimer
-            //         print('Disclaimer pressed');
-            //       },
-            //       child: TextStyles.body(text: 'Disclaimer'),
-            //     ),
-            //   ],
-            // ),
-
-            // SizedBox(height: 20),
-          ],
+              SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );

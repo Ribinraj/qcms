@@ -2,69 +2,103 @@ import 'package:flutter/material.dart';
 import 'package:qcms/presentation/screens/screen_loginpage/screen_loginpage.dart';
 import 'package:qcms/presentation/screens/screen_mainpage/screen_mainpage.dart';
 import 'package:qcms/presentation/screens/screen_onbording/screen_onboarding.dart';
-
+import 'package:qcms/presentation/screens/screen_registerpage/screen_registerpage.dart';
+import 'package:qcms/presentation/screens/screen_requestform/screen_requestform.dart';
+import 'package:qcms/presentation/screens/screen_verifyOTPpage/screen_verifyotppage.dart';
 
 // SINGLE ROUTE GENERATOR CLASS - This is all you need!
 class AppRouter {
   // Route name constants (keep them here in same class)
-  static const String main = '/main';
+  static const String mainpage = '/mainpage';
   static const String login = '/login';
   static const String profile = '/profile';
   static const String cart = '/cart';
   static const String dashboard = '/dashboard';
   static const String onboarding = '/onboarding';
-  
+  static const String register = '/register';
+  static const String requestform = '/requestform';
+  static const String verifyOTP = '/verifyOTP';
 
   // Single method to generate all routes
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments as Map<String, dynamic>?;
-    
+
     switch (settings.name) {
-            case onboarding:
+      case onboarding:
         return MaterialPageRoute(
           builder: (_) => OnboardingScreen(),
           settings: settings,
         );
-      case main:
+      case mainpage:
         return MaterialPageRoute(
-          builder: (_) => ScreenMainpage(),
+          builder: (_) => ScreenMainPage(),
           settings: settings,
         );
-      
+
       case login:
         return MaterialPageRoute(
           builder: (_) => ScreenLoginpage(), // Replace with your actual screen
           settings: settings,
         );
-      
-     // case profile:
-        // Example with parameter
-       // final userId = args?['userId'] as String?;
-        // return MaterialPageRoute(
-        //   builder: (_) => ProfileScreen(userId: userId),
-        //   settings: settings,
-        // );
-      
-      case cart:
-        // return MaterialPageRoute(
-        //   builder: (_) => CartScreen(), // Replace with your actual screen
-        //   settings: settings,
-        // );
-      
-      case dashboard:
-        // return MaterialPageRoute(
-        //   builder: (_) => DashboardScreen(), // Replace with your actual screen
-        //   settings: settings,
-        // );
-      
-      default:
+      case register:
         return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            appBar: AppBar(title: Text('Page Not Found')),
-            body: Center(child: Text('Route ${settings.name} not found')),
-          ),
+          builder: (_) =>
+              ScreenRegisterpage(), // Replace with your actual screen
+          settings: settings,
         );
+      case requestform:
+        return MaterialPageRoute(
+          builder: (_) =>
+              ScreenRequestformPage(), // Replace with your actual screen
+          settings: settings,
+        );
+        case verifyOTP:
+  final customerId = args?['customerId'] as String?;
+  final mobileNumber = args?['mobileNumber'] as String?;
+
+  if (customerId != null && mobileNumber != null) {
+    return MaterialPageRoute(
+      builder: (_) => ScreenVerifyOtp(
+        customerId: customerId,
+        mobileNumber: mobileNumber,
+      ),
+      settings: settings,
+    );
+  } else {
+    return _errorRoute('Missing parameters for Verify OTP');
+  }
+
+      // case profile:
+      // Example with parameter
+      // final userId = args?['userId'] as String?;
+      // return MaterialPageRoute(
+      //   builder: (_) => ProfileScreen(userId: userId),
+      //   settings: settings,
+      // );
+
+      case cart:
+      // return MaterialPageRoute(
+      //   builder: (_) => CartScreen(), // Replace with your actual screen
+      //   settings: settings,
+      // );
+
+      case dashboard:
+      // return MaterialPageRoute(
+      //   builder: (_) => DashboardScreen(), // Replace with your actual screen
+      //   settings: settings,
+      // );
+
+      default:
+        return  _errorRoute('Route ${settings.name} not found');
     }
+  }
+    static Route<dynamic> _errorRoute(String message) {
+    return MaterialPageRoute(
+      builder: (_) => Scaffold(
+        appBar: AppBar(title: const Text('Error')),
+        body: Center(child: Text(message)),
+      ),
+    );
   }
 }
 
@@ -74,20 +108,17 @@ class CustomNavigation {
 
   /// Push a new named route
   static Future<T?> pushNamed<T>(
-    BuildContext context, 
+    BuildContext context,
     String routeName, {
     Map<String, dynamic>? arguments,
   }) {
-    return Navigator.pushNamed<T>(
-      context,
-      routeName,
-      arguments: arguments,
-    );
+    return Navigator.pushNamed<T>(context, routeName, arguments: arguments);
   }
+  
 
   /// Push named route with custom transition
   static Future<T?> pushNamedWithTransition<T>(
-    BuildContext context, 
+    BuildContext context,
     String routeName, {
     Map<String, dynamic>? arguments,
     Offset beginOffset = const Offset(1.0, 0.0),
@@ -100,25 +131,27 @@ class CustomNavigation {
         pageBuilder: (context, animation, secondaryAnimation) {
           // Use the route generator to get the correct widget
           final route = AppRouter.generateRoute(
-            RouteSettings(name: routeName, arguments: arguments)
+            RouteSettings(name: routeName, arguments: arguments),
           );
           return (route as MaterialPageRoute).builder(context);
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          var tween = Tween(begin: beginOffset, end: Offset.zero)
-              .chain(CurveTween(curve: curve));
+          var tween = Tween(
+            begin: beginOffset,
+            end: Offset.zero,
+          ).chain(CurveTween(curve: curve));
           return SlideTransition(
             position: animation.drive(tween),
             child: child,
           );
         },
-      )
+      ),
     );
   }
 
   /// Replace current route with named route
   static Future<T?> pushReplacementNamed<T>(
-    BuildContext context, 
+    BuildContext context,
     String routeName, {
     Map<String, dynamic>? arguments,
   }) {
@@ -131,7 +164,7 @@ class CustomNavigation {
 
   /// Replace with custom transition
   static Future<T?> pushReplacementNamedWithTransition<T>(
-    BuildContext context, 
+    BuildContext context,
     String routeName, {
     Map<String, dynamic>? arguments,
     Offset beginOffset = const Offset(1.0, 0.0),
@@ -143,26 +176,28 @@ class CustomNavigation {
         settings: RouteSettings(name: routeName, arguments: arguments),
         pageBuilder: (context, animation, secondaryAnimation) {
           final route = AppRouter.generateRoute(
-            RouteSettings(name: routeName, arguments: arguments)
+            RouteSettings(name: routeName, arguments: arguments),
           );
           return (route as MaterialPageRoute).builder(context);
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return SlideTransition(
             position: animation.drive(
-              Tween(begin: beginOffset, end: Offset.zero)
-                  .chain(CurveTween(curve: curve))
+              Tween(
+                begin: beginOffset,
+                end: Offset.zero,
+              ).chain(CurveTween(curve: curve)),
             ),
             child: child,
           );
         },
-      )
+      ),
     );
   }
 
   /// Remove all routes and push new named route
   static Future<T?> pushNamedAndRemoveUntil<T>(
-    BuildContext context, 
+    BuildContext context,
     String routeName, {
     Map<String, dynamic>? arguments,
   }) {

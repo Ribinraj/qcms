@@ -188,6 +188,7 @@ class ResponsiveSizedBox {
   // Height constants
   static SizedBox height5 = SizedBox(height: ResponsiveUtils.hp(0.5));
   static SizedBox height10 = SizedBox(height: ResponsiveUtils.hp(1));
+    static SizedBox height15 = SizedBox(height: ResponsiveUtils.hp(1.5));
   static SizedBox height20 = SizedBox(height: ResponsiveUtils.hp(2));
   static SizedBox height30 = SizedBox(height: ResponsiveUtils.hp(3));
   static SizedBox height50 = SizedBox(height: ResponsiveUtils.hp(5));
