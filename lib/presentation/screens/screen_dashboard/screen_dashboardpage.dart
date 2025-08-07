@@ -26,19 +26,20 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Indian Railways',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold,
                         color: Appcolors.kwhitecolor,
                         letterSpacing: 1,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    ResponsiveSizedBox.height10,
+
                     Text(
                       'Quarters Complaint Management System',
                       style: TextStyle(
@@ -152,7 +153,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 15,
                 color: Appcolors.kwhitecolor,
                 // shadows: [
                 //   Shadow(

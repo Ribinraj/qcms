@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:qcms/presentation/screens/screen_complaintdetails/screen_complaintdetails_page.dart';
 import 'package:qcms/presentation/screens/screen_loginpage/screen_loginpage.dart';
 import 'package:qcms/presentation/screens/screen_mainpage/screen_mainpage.dart';
 import 'package:qcms/presentation/screens/screen_onbording/screen_onboarding.dart';
 import 'package:qcms/presentation/screens/screen_registerpage/screen_registerpage.dart';
 import 'package:qcms/presentation/screens/screen_requestform/screen_requestform.dart';
+import 'package:qcms/presentation/screens/screen_spashscreen/screen_splashscreen.dart';
 import 'package:qcms/presentation/screens/screen_verifyOTPpage/screen_verifyotppage.dart';
 
 // SINGLE ROUTE GENERATOR CLASS - This is all you need!
@@ -18,6 +20,8 @@ class AppRouter {
   static const String register = '/register';
   static const String requestform = '/requestform';
   static const String verifyOTP = '/verifyOTP';
+  static const String complaintdetails = '/complaintdetails';
+  static const String splashpage = '/splashpage';
 
   // Single method to generate all routes
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -27,6 +31,11 @@ class AppRouter {
       case onboarding:
         return MaterialPageRoute(
           builder: (_) => OnboardingScreen(),
+          settings: settings,
+        );
+      case splashpage:
+        return MaterialPageRoute(
+          builder: (_) => SplashScreen(),
           settings: settings,
         );
       case mainpage:
@@ -52,22 +61,27 @@ class AppRouter {
               ScreenRequestformPage(), // Replace with your actual screen
           settings: settings,
         );
-        case verifyOTP:
-  final customerId = args?['customerId'] as String?;
-  final mobileNumber = args?['mobileNumber'] as String?;
+      case verifyOTP:
+        final customerId = args?['customerId'] as String?;
+        final mobileNumber = args?['mobileNumber'] as String?;
 
-  if (customerId != null && mobileNumber != null) {
-    return MaterialPageRoute(
-      builder: (_) => ScreenVerifyOtp(
-        customerId: customerId,
-        mobileNumber: mobileNumber,
-      ),
-      settings: settings,
-    );
-  } else {
-    return _errorRoute('Missing parameters for Verify OTP');
-  }
-
+        if (customerId != null && mobileNumber != null) {
+          return MaterialPageRoute(
+            builder: (_) => ScreenVerifyOtp(
+              customerId: customerId,
+              mobileNumber: mobileNumber,
+            ),
+            settings: settings,
+          );
+        } else {
+          return _errorRoute('Missing parameters for Verify OTP');
+        }
+      case complaintdetails:
+        return MaterialPageRoute(
+          builder: (_) =>
+              ScreenComplaintdetailsPage(), // Replace with your actual screen
+          settings: settings,
+        );
       // case profile:
       // Example with parameter
       // final userId = args?['userId'] as String?;
@@ -89,10 +103,11 @@ class AppRouter {
       // );
 
       default:
-        return  _errorRoute('Route ${settings.name} not found');
+        return _errorRoute('Route ${settings.name} not found');
     }
   }
-    static Route<dynamic> _errorRoute(String message) {
+
+  static Route<dynamic> _errorRoute(String message) {
     return MaterialPageRoute(
       builder: (_) => Scaffold(
         appBar: AppBar(title: const Text('Error')),
@@ -114,37 +129,71 @@ class CustomNavigation {
   }) {
     return Navigator.pushNamed<T>(context, routeName, arguments: arguments);
   }
-  
 
   /// Push named route with custom transition
+  // static Future<T?> pushNamedWithTransition<T>(
+  //   BuildContext context,
+  //   String routeName, {
+  //   Map<String, dynamic>? arguments,
+  //   Offset beginOffset = const Offset(1.0, 0.0),
+  //   Curve curve = Curves.easeInOut,
+  // }) {
+  //   return Navigator.push<T>(
+  //     context,
+  //     PageRouteBuilder<T>(
+  //       settings: RouteSettings(name: routeName, arguments: arguments),
+  //       pageBuilder: (context, animation, secondaryAnimation) {
+  //         // Use the route generator to get the correct widget
+  //         final route = AppRouter.generateRoute(
+  //           RouteSettings(name: routeName, arguments: arguments),
+  //         );
+  //         return (route as MaterialPageRoute).builder(context);
+  //       },
+  //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+  //         var tween = Tween(
+  //           begin: beginOffset,
+  //           end: Offset.zero,
+  //         ).chain(CurveTween(curve: curve));
+  //         return SlideTransition(
+  //           position: animation.drive(tween),
+  //           child: child,
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
   static Future<T?> pushNamedWithTransition<T>(
     BuildContext context,
     String routeName, {
     Map<String, dynamic>? arguments,
     Offset beginOffset = const Offset(1.0, 0.0),
-    Curve curve = Curves.easeInOut,
+    Curve curve = Curves.fastOutSlowIn,
+    Duration duration = const Duration(milliseconds: 400),
+    Duration reverseDuration = const Duration(milliseconds: 300),
   }) {
     return Navigator.push<T>(
       context,
       PageRouteBuilder<T>(
         settings: RouteSettings(name: routeName, arguments: arguments),
         pageBuilder: (context, animation, secondaryAnimation) {
-          // Use the route generator to get the correct widget
           final route = AppRouter.generateRoute(
             RouteSettings(name: routeName, arguments: arguments),
           );
           return (route as MaterialPageRoute).builder(context);
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          var tween = Tween(
+          final tween = Tween(
             begin: beginOffset,
             end: Offset.zero,
           ).chain(CurveTween(curve: curve));
+
           return SlideTransition(
             position: animation.drive(tween),
             child: child,
           );
         },
+        transitionDuration: duration,
+        reverseTransitionDuration: reverseDuration,
       ),
     );
   }

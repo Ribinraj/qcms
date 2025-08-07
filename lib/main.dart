@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/responsiveutils.dart';
 import 'package:qcms/presentation/blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
@@ -10,6 +11,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
+    WidgetsFlutterBinding.ensureInitialized();
+  
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -26,21 +36,22 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         onGenerateRoute: AppRouter.generateRoute,
-        home: FutureBuilder<bool>(
-          future: _checkOnboardingStatus(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(body: Center(child: CircularProgressIndicator()));
-            }
+        initialRoute: AppRouter.splashpage,
+        // home: FutureBuilder<bool>(
+        //   future: _checkOnboardingStatus(),
+        //   builder: (context, snapshot) {
+        //     if (snapshot.connectionState == ConnectionState.waiting) {
+        //       return Scaffold(body: Center(child: CircularProgressIndicator()));
+        //     }
 
-            final hasSeenOnboarding = snapshot.data ?? false;
-            if (hasSeenOnboarding) {
-              return ScreenLoginpage(); // Go directly to main page
-            } else {
-              return OnboardingScreen(); // Show onboarding first
-            }
-          },
-        ),
+        //     final hasSeenOnboarding = snapshot.data ?? false;
+        //     if (hasSeenOnboarding) {
+        //       return ScreenLoginpage();
+        //     } else {
+        //       return OnboardingScreen(); // Show onboarding first
+        //     }
+        //   },
+        // ),
         onUnknownRoute: (settings) => MaterialPageRoute(
           builder: (_) => Scaffold(
             appBar: AppBar(title: Text('404')),

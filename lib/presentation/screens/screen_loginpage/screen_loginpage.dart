@@ -99,33 +99,6 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
                 },
               ),
 
-              // Container(
-              //   decoration: BoxDecoration(
-              //     color: Color(0xFFE8E4F3),
-
-              //     border: Border(
-              //       bottom: BorderSide(color: Appcolors.kbordercolor, width: 1.5),
-              //     ),
-              //   ),
-              //   child: TextField(
-              //     controller: _mobileController,
-              //     focusNode: _mobileFocusNode,
-              //     keyboardType: TextInputType.phone,
-              //     style: TextStyle(fontSize: 16, color: Colors.black87),
-              //     decoration: InputDecoration(
-              //       hintText: 'Please enter your Mobile Number',
-              //       hintStyle: TextStyle(
-              //         color: const Color.fromARGB(255, 108, 106, 106),
-              //         fontSize: 15,
-              //       ),
-              //       border: InputBorder.none,
-              //       contentPadding: EdgeInsets.symmetric(
-              //         horizontal: 10,
-              //         vertical: 10,
-              //       ),
-              //     ),
-              //   ),
-              // ),
               ResponsiveSizedBox.height30,
 
               Customloginbutton(

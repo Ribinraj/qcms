@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:qcms/core/colors.dart';
 
 class Customloginbutton extends StatelessWidget {
-  const Customloginbutton({super.key, required this.onPressed, required this.text});
+  const Customloginbutton({
+    super.key,
+    required this.onPressed,
+    required this.text,
+  });
   final VoidCallback onPressed;
   final String text;
   @override
@@ -12,14 +17,14 @@ class Customloginbutton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF8B3A3A),
+          backgroundColor: Appcolors.kprimarycolor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 0,
         ),
         child: Text(
           text,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),

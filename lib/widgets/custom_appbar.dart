@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qcms/core/appconstants.dart';
 import 'package:qcms/core/colors.dart';
+import 'package:qcms/core/constants.dart';
 import 'package:qcms/core/responsiveutils.dart';
-import 'package:qcms/core/urls.dart';
 
 // Custom AppBar Component that can be reused
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -46,7 +46,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               // Menu Icon
               Container(
                 padding: const EdgeInsets.all(8),
-                width: ResponsiveUtils.wp(9),
+                width: ResponsiveUtils.wp(7),
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(Appconstants.whitelogo),
@@ -55,14 +55,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              ResponsiveSizedBox.width20,
               // Title
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
                     color: iconColor,
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
                   ),
@@ -72,7 +72,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               Icon(
                 Icons.notifications_outlined,
                 color: iconColor,
-                size: ResponsiveUtils.wp(8),
+                size: ResponsiveUtils.wp(6),
               ),
             ],
           ),
@@ -82,5 +82,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(75);
+  Size get preferredSize => const Size.fromHeight(70);
 }
