@@ -2,20 +2,25 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:qcms/core/appconstants.dart';
+
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
 import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/presentation/blocs/resend_otp_bloc/resend_otp_bloc.dart';
+import 'package:qcms/presentation/blocs/verify_otp_bloc/verify_otp_bloc.dart';
 import 'package:qcms/widgets/custom_routes.dart';
+import 'package:qcms/widgets/custom_snackbar.dart';
 
 class ScreenVerifyOtp extends StatefulWidget {
-  final String customerId;
+  final String flatId;
 
   final String mobileNumber;
   const ScreenVerifyOtp({
     Key? key,
-    required this.customerId,
+    required this.flatId,
 
     required this.mobileNumber,
   }) : super(key: key);
@@ -95,9 +100,9 @@ class _ScreenVerifyOtpState extends State<ScreenVerifyOtp> {
     _resetResendTimer();
 
     // Call resend OTP API
-    // context
-    //     .read<ResendOtpBloc>()
-    //     .add(ResendOtpClickEvent(customerId: widget.customerId));
+    context.read<ResendOtpBloc>().add(
+      ResendOtpClickEvent(flatId: widget.flatId),
+    );
   }
 
   @override
@@ -128,7 +133,7 @@ class _ScreenVerifyOtpState extends State<ScreenVerifyOtp> {
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TextStyles.headline(text: 'Verification Code'),
                   ResponsiveSizedBox.height10,
@@ -140,108 +145,60 @@ class _ScreenVerifyOtpState extends State<ScreenVerifyOtp> {
                   ResponsiveSizedBox.height20,
 
                   // PIN Code TextField
-                  PinCodeTextField(
-                    appContext: context,
-                    length: 6,
-                    controller: _otpController,
-                    obscureText: false,
-                    animationType: AnimationType.fade,
-                    pinTheme: PinTheme(
-                      inactiveBorderWidth: 1,
-                      activeBorderWidth: 1,
-                      selectedBorderWidth: 1,
-                      shape: PinCodeFieldShape.box,
-                      borderRadius: BorderRadius.circular(8),
-                      fieldHeight: 50,
-                      fieldWidth: 48,
-                      activeFillColor: Appcolors.kwhitecolor,
-                      inactiveFillColor: Appcolors.kwhitecolor,
-                      selectedFillColor: Appcolors.kwhitecolor,
-                      activeColor: Appcolors.kprimarycolor,
-                      inactiveColor: Appcolors.kprimarycolor,
-                      selectedColor: Appcolors.kprimarycolor,
-                      errorBorderColor: Colors.red,
+                  SizedBox(
+                    width: ResponsiveUtils.wp(70),
+                    child: PinCodeTextField(
+                      appContext: context,
+                      length: 4,
+                      controller: _otpController,
+                      obscureText: false,
+                      animationType: AnimationType.fade,
+                      pinTheme: PinTheme(
+                        inactiveBorderWidth: 1,
+                        activeBorderWidth: 1,
+                        selectedBorderWidth: 1,
+                        shape: PinCodeFieldShape.box,
+                        borderRadius: BorderRadius.circular(8),
+                        fieldHeight: 50,
+                        fieldWidth: 48,
+                        activeFillColor: Appcolors.kwhitecolor,
+                        inactiveFillColor: Appcolors.kwhitecolor,
+                        selectedFillColor: Appcolors.kwhitecolor,
+                        activeColor: Appcolors.kprimarycolor,
+                        inactiveColor: Appcolors.kprimarycolor,
+                        selectedColor: Appcolors.kprimarycolor,
+                        errorBorderColor: Colors.red,
+                      ),
+                      cursorColor: Appcolors.kprimarycolor,
+                      cursorWidth: 1,
+                      animationDuration: const Duration(milliseconds: 300),
+                      enableActiveFill: true,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      onCompleted: (value) {
+                        if (!mounted) return;
+                        setState(() {
+                          _isButtonEnabled = true;
+                          _currentOtp = value;
+                        });
+                      },
+                      onChanged: (value) {
+                        if (!mounted) return;
+                        setState(() {
+                          _currentOtp = value;
+                          _isButtonEnabled = value.length == 4;
+                        });
+                      },
                     ),
-                    cursorColor: Appcolors.kprimarycolor,
-                    cursorWidth: 1,
-                    animationDuration: const Duration(milliseconds: 300),
-                    enableActiveFill: true,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    onCompleted: (value) {
-                      if (!mounted) return;
-                      setState(() {
-                        _isButtonEnabled = true;
-                        _currentOtp = value;
-                      });
-                    },
-                    onChanged: (value) {
-                      if (!mounted) return;
-                      setState(() {
-                        _currentOtp = value;
-                        _isButtonEnabled = value.length == 6;
-                      });
-                    },
                   ),
 
                   const SizedBox(height: 40),
 
-                  // Verify Button with BLoC
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _isButtonEnabled
-                          ? () async {
-                              // SharedPreferences prefs =
-                              //     await SharedPreferences.getInstance();
-                              // String? token = prefs.getString('FCM_TOKEN');
-
-                              if (_currentOtp.length == 6) {
-                                // context.read<VerifyOtpBloc>().add(
-                                //     VerifyOtpButtonClickEvent(
-                                //         user: VerifyOtpmodel(
-                                //             customerId: widget.customerId,
-                                //             customerOTP: _currentOtp,
-                                //             pushToken: token ?? '')));
-                                CustomNavigation.pushNamedWithTransition(
-                                  context,
-                                  AppRouter.mainpage,
-                                );
-                              } else {
-                                // showTopSnackBar(
-                                //   Overlay.of(context),
-                                //   const CustomSnackBar.error(
-                                //     message: 'Please enter valid OTP',
-                                //   ),
-                                // );
-                              }
-                            }
-                          : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _isButtonEnabled
-                            ? Appcolors.kprimarycolor
-                            : Colors.grey.shade400,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text(
-                        'Verify',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // _buildVerifyButton(),
+                  _buildVerifyButton(),
                   const SizedBox(height: 24),
 
                   // Timer and Resend Section
-                  //_buildTimerOrResend(),
+                  _buildTimerOrResend(),
                 ],
               ),
             ),
@@ -251,131 +208,119 @@ class _ScreenVerifyOtpState extends State<ScreenVerifyOtp> {
     );
   }
 
-  // Widget _buildVerifyButton() {
-  //   return BlocConsumer<VerifyOtpBloc, VerifyOtpState>(
-  //     listener: (context, state) {
-  //       if (state is VerifyOtpSuccessState) {
-  //         if (widget.loginedfrom == 'Cartpage') {
-  //             navigateToCartPageAfterLogin(context);
-  //         } else {
-  //           navigateToMainPage(context, 3);
-  //         }
-  //       } else if (state is VerifyOtpErrorState) {
-  //         showTopSnackBar(
-  //           Overlay.of(context),
-  //           CustomSnackBar.error(
-  //             message: state.message,
-  //           ),
-  //         );
-  //       }
-  //     },
-  //     builder: (context, state) {
-  //       if (state is VerifyOtpLoadingState) {
-  //         return Container(
-  //           width: double.infinity,
-  //           height: 50,
-  //           decoration: BoxDecoration(
-  //             color: Appcolors.kprimarycolor,
-  //             borderRadius: BorderRadius.circular(30),
-  //           ),
-  //           child: const Center(
-  //             child: SpinKitWave(
-  //               size: 18,
-  //               color: Appcolors.kwhiteColor,
-  //             ),
-  //           ),
-  //         );
-  //       }
+  Widget _buildVerifyButton() {
+    return BlocConsumer<VerifyOtpBloc, VerifyOtpState>(
+      listener: (context, state) {
+        if (state is VerifyOtpSuccessState) {
+          CustomNavigation.pushReplacementNamedWithTransition(
+            context,
+            AppRouter.mainpage,
+          );
+        } else if (state is VerifyOtpErrorState) {
+          CustomSnackbar.show(
+            context,
+            message: state.message,
+            type: SnackbarType.error,
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is VerifyOtpLoadingState) {
+          return Container(
+            width: double.infinity,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Appcolors.kprimarycolor,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: const Center(
+              child: SpinKitWave(size: 18, color: Appcolors.kwhitecolor),
+            ),
+          );
+        }
 
-  //       return SizedBox(
-  //         width: double.infinity,
-  //         height: 50,
-  //         child: ElevatedButton(
-  //           onPressed: _isButtonEnabled
-  //               ? () async {
-  //                   // SharedPreferences prefs =
-  //                   //     await SharedPreferences.getInstance();
-  //                   // String? token = prefs.getString('FCM_TOKEN');
+        return SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: _isButtonEnabled
+                ? () {
+                    if (_currentOtp.length == 4) {
+                      context.read<VerifyOtpBloc>().add(
+                        VerifyOtpButtonClickEvent(
+                          otp: _currentOtp,
+                          flatId: widget.flatId,
+                        ),
+                      );
+                    } else {
+                      CustomSnackbar.show(
+                        context,
+                        message: 'Please fill all required fields',
+                        type: SnackbarType.error,
+                      );
+                    }
+                  }
+                : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _isButtonEnabled
+                  ? Appcolors.kprimarycolor
+                  : Colors.grey.shade400,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            child: const Text(
+              'Verify',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-  //                   if (_currentOtp.length == 6) {
-  //                     // context.read<VerifyOtpBloc>().add(
-  //                     //     VerifyOtpButtonClickEvent(
-  //                     //         user: VerifyOtpmodel(
-  //                     //             customerId: widget.customerId,
-  //                     //             customerOTP: _currentOtp,
-  //                     //             pushToken: token ?? '')));
-  //                   } else {
-  //                     // showTopSnackBar(
-  //                     //   Overlay.of(context),
-  //                     //   const CustomSnackBar.error(
-  //                     //     message: 'Please enter valid OTP',
-  //                     //   ),
-  //                     // );
-  //                   }
-  //                 }
-  //               : null,
-  //           style: ElevatedButton.styleFrom(
-  //             backgroundColor: _isButtonEnabled
-  //                 ? Appcolors.kprimarycolor
-  //                 : Colors.grey.shade400,
-  //             foregroundColor: Colors.white,
-  //             shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(30),
-  //             ),
-  //           ),
-  //           child: const Text(
-  //             'Verify',
-  //             style: TextStyle(
-  //               fontSize: 15,
-  //               fontWeight: FontWeight.w600,
-  //             ),
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-  // Widget _buildTimerOrResend() {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: [
-  //       TextStyles.medium(
-  //           text: "Didn't receive the code? ", weight: FontWeight.bold),
-  //       BlocConsumer<ResendOtpBloc, ResendOtpState>(
-  //         listener: (context, state) {
-  //           if (state is ResendOtpSuccessState) {
-  //             showTopSnackBar(
-  //               Overlay.of(context),
-  //               const CustomSnackBar.success(
-  //                 message: 'OTP sent successfully',
-  //               ),
-  //             );
-  //           } else if (state is ResendOtpErrorState) {
-  //             showTopSnackBar(
-  //               Overlay.of(context),
-  //               CustomSnackBar.error(
-  //                 message: state.message,
-  //               ),
-  //             );
-  //           }
-  //         },
-  //         builder: (context, state) {
-  //           return TextButton(
-  //             onPressed: _resendTimer == 0 ? () => _resendOtp() : null,
-  //             child: TextStyles.body(
-  //               text: _resendTimer > 0
-  //                   ? 'Resend in $_resendTimer seconds'
-  //                   : 'Resend',
-  //               weight: FontWeight.w600,
-  //               color: _resendTimer > 0
-  //                   ? Colors.grey.shade500
-  //                   : Appcolors.kredcolor,
-  //             ),
-  //           );
-  //         },
-  //       ),
-  //     ],
-  //   );
-  // }
+  Widget _buildTimerOrResend() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextStyles.medium(
+          text: "Didn't receive the code? ",
+          weight: FontWeight.bold,
+        ),
+        BlocConsumer<ResendOtpBloc, ResendOtpState>(
+          listener: (context, state) {
+            if (state is ResendOtpSuccessState) {
+              CustomSnackbar.show(
+                context,
+                message:
+                    "OTP has been sent on your Mobile Number ${widget.mobileNumber}.",
+                type: SnackbarType.success,
+              );
+            } else if (state is ResendOtpErrorState) {
+              CustomSnackbar.show(
+                context,
+                message: state.message,
+                type: SnackbarType.error,
+              );
+            }
+          },
+          builder: (context, state) {
+            return TextButton(
+              onPressed: _resendTimer == 0 ? () => _resendOtp() : null,
+              child: TextStyles.body(
+                text: _resendTimer > 0
+                    ? 'Resend in $_resendTimer seconds'
+                    : 'Resend',
+                weight: FontWeight.w600,
+                color: _resendTimer > 0
+                    ? Colors.grey.shade500
+                    : Appcolors.kredcolor,
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
 }

@@ -61,46 +61,50 @@ class AppRouter {
               ScreenRequestformPage(), // Replace with your actual screen
           settings: settings,
         );
-      case verifyOTP:
-        final customerId = args?['customerId'] as String?;
+           case verifyOTP:
+        final flatId = args?['flatId'] as String?;
         final mobileNumber = args?['mobileNumber'] as String?;
 
-        if (customerId != null && mobileNumber != null) {
+        // Option 1: Required parameters (your current approach)
+        if (flatId != null && mobileNumber != null) {
           return MaterialPageRoute(
             builder: (_) => ScreenVerifyOtp(
-              customerId: customerId,
+              flatId: flatId,
               mobileNumber: mobileNumber,
             ),
             settings: settings,
           );
         } else {
-          return _errorRoute('Missing parameters for Verify OTP');
+          return _errorRoute('Missing required parameters for Verify OTP: flatId and mobileNumber');
         }
+  //     case profile:
+  //       final userId = args?['userId'] as String?;
+  //       final showEditButton = args?['showEditButton'] as bool? ?? true; // Default to true
+        
+  //       return MaterialPageRoute(
+  //         builder: (_) => ScreenProfilePage(
+  //           userId: userId, // Can be null
+  //           showEditButton: showEditButton, // Has default value
+  //         ),
+  //         settings: settings,
+  //       );
+
+  //     case complaintdetails:
+  //       return MaterialPageRoute(
+  //         builder: (_) => ScreenComplaintdetailsPage(),
+  //         settings: settings,
+  //       );
+
+  //     default:
+  //       return _errorRoute('Route ${settings.name} not found');
+  //   }
+  // }
       case complaintdetails:
         return MaterialPageRoute(
           builder: (_) =>
               ScreenComplaintdetailsPage(), // Replace with your actual screen
           settings: settings,
         );
-      // case profile:
-      // Example with parameter
-      // final userId = args?['userId'] as String?;
-      // return MaterialPageRoute(
-      //   builder: (_) => ProfileScreen(userId: userId),
-      //   settings: settings,
-      // );
-
-      case cart:
-      // return MaterialPageRoute(
-      //   builder: (_) => CartScreen(), // Replace with your actual screen
-      //   settings: settings,
-      // );
-
-      case dashboard:
-      // return MaterialPageRoute(
-      //   builder: (_) => DashboardScreen(), // Replace with your actual screen
-      //   settings: settings,
-      // );
 
       default:
         return _errorRoute('Route ${settings.name} not found');
@@ -130,38 +134,7 @@ class CustomNavigation {
     return Navigator.pushNamed<T>(context, routeName, arguments: arguments);
   }
 
-  /// Push named route with custom transition
-  // static Future<T?> pushNamedWithTransition<T>(
-  //   BuildContext context,
-  //   String routeName, {
-  //   Map<String, dynamic>? arguments,
-  //   Offset beginOffset = const Offset(1.0, 0.0),
-  //   Curve curve = Curves.easeInOut,
-  // }) {
-  //   return Navigator.push<T>(
-  //     context,
-  //     PageRouteBuilder<T>(
-  //       settings: RouteSettings(name: routeName, arguments: arguments),
-  //       pageBuilder: (context, animation, secondaryAnimation) {
-  //         // Use the route generator to get the correct widget
-  //         final route = AppRouter.generateRoute(
-  //           RouteSettings(name: routeName, arguments: arguments),
-  //         );
-  //         return (route as MaterialPageRoute).builder(context);
-  //       },
-  //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-  //         var tween = Tween(
-  //           begin: beginOffset,
-  //           end: Offset.zero,
-  //         ).chain(CurveTween(curve: curve));
-  //         return SlideTransition(
-  //           position: animation.drive(tween),
-  //           child: child,
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
+
   static Future<T?> pushNamedWithTransition<T>(
     BuildContext context,
     String routeName, {

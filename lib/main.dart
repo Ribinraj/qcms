@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/domain/repositories/loginrepo.dart';
 import 'package:qcms/presentation/blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
+import 'package:qcms/presentation/blocs/register_new_division/register_newdivision_bloc.dart';
+import 'package:qcms/presentation/blocs/resend_otp_bloc/resend_otp_bloc.dart';
+import 'package:qcms/presentation/blocs/send_otp_bloc/send_otp_bloc.dart';
+import 'package:qcms/presentation/blocs/verify_otp_bloc/verify_otp_bloc.dart';
 import 'package:qcms/presentation/screens/screen_loginpage/screen_loginpage.dart';
 import 'package:qcms/presentation/screens/screen_mainpage/screen_mainpage.dart';
 import 'package:qcms/presentation/screens/screen_onbording/screen_onboarding.dart';
@@ -11,8 +16,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-    WidgetsFlutterBinding.ensureInitialized();
-  
+  WidgetsFlutterBinding.ensureInitialized();
+
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -30,13 +35,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ResponsiveUtils().init(context);
-    return BlocProvider(
-      create: (context) => BottomNavigationBloc(),
+    final loginrepo = LoginRepo();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => BottomNavigationBloc()),
+        BlocProvider(create: (context) => SendOtpBloc(repository: loginrepo)),
+        BlocProvider(create: (context) => VerifyOtpBloc(repository: loginrepo)),
+        BlocProvider(create: (context) => ResendOtpBloc(repository: loginrepo)),
+        BlocProvider(
+          create: (context) => RegisterNewdivisionBloc(repository: loginrepo),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         onGenerateRoute: AppRouter.generateRoute,
-        initialRoute: AppRouter.splashpage,
+        initialRoute: AppRouter.login,
         // home: FutureBuilder<bool>(
         //   future: _checkOnboardingStatus(),
         //   builder: (context, snapshot) {
@@ -60,7 +74,7 @@ class MyApp extends StatelessWidget {
         ),
         theme: ThemeData(
           fontFamily: 'Helvetica',
-    
+
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           scaffoldBackgroundColor: Appcolors.kbackgroundcolor,

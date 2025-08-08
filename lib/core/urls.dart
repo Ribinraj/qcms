@@ -1,6 +1,9 @@
-// class Appconstants {
-//   static const logo = 'assets/images/surya_logo_final new.png';
-//   static String phonenumber = '';
-//   static const whitelogo = 'assets/images/surya_fashion_white.png';
-//   static const backgroundimage = 'assets/images/v915-wit-010-e.jpg';
-// }
+class Endpoints {
+  static const baseUrl = 'https://qcomplaints.com/api/';
+  static const login = 'consumer/login/mobile';
+  static const verifyotp = 'consumer/login/verify';
+  static const resendOTP = 'consumer/login/resend';
+  static const registerdivison = 'consumer/login/newdivision';
+  static const fetchdevisions = 'consumer/masters/divisions';
+  static const fetchquarters = 'consumer/masters/quarters';
+}

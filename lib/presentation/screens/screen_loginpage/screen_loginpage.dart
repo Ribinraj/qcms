@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qcms/core/appconstants.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
 import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/presentation/blocs/send_otp_bloc/send_otp_bloc.dart';
+import 'package:qcms/widgets/custom_login_loadingbutton.dart';
 import 'package:qcms/widgets/custom_loginbutton.dart';
 import 'package:qcms/widgets/custom_routes.dart';
+import 'package:qcms/widgets/custom_snackbar.dart';
 import 'package:qcms/widgets/custom_textfield.dart';
 
 class ScreenLoginpage extends StatefulWidget {
@@ -18,6 +22,7 @@ class ScreenLoginpage extends StatefulWidget {
 class QCMSLoginScreenState extends State<ScreenLoginpage> {
   final TextEditingController _mobileController = TextEditingController();
   final FocusNode _mobileFocusNode = FocusNode();
+  final fromKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -28,17 +33,13 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, // or your desired color
-        statusBarIconBrightness: Brightness.dark, // for dark icons
-        statusBarBrightness: Brightness.light, // for iOS
-      ),
-      child: Scaffold(
-        backgroundColor: Color.fromARGB(255, 245, 240, 235),
+    return Scaffold(
+      backgroundColor: Color.fromARGB(255, 245, 240, 235),
 
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 24.0),
+        child: Form(
+          key: fromKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -101,18 +102,54 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
 
               ResponsiveSizedBox.height30,
 
-              Customloginbutton(
-                onPressed: () {
-                  CustomNavigation.pushNamedWithTransition(
-                    context,
-                    AppRouter.verifyOTP,
-                    arguments: {
-                      'customerId': 'abc123',
-                      'mobileNumber': '9876543210',
+              BlocConsumer<SendOtpBloc, SendOtpState>(
+                listener: (context, state) {
+                  if (state is SendOtpSuccess) {
+                      CustomSnackbar.show(
+                                  context,
+                                  message: "OTP has been sent on your Mobile Number ${_mobileController.text}.",
+                                  type: SnackbarType.success,
+                                );
+                    CustomNavigation.pushReplacementNamedWithTransition(
+                      context,
+                      AppRouter.verifyOTP,
+                      arguments: {
+                        'mobileNumber': _mobileController.text,
+                        'flatId': state.flatId,
+                      },
+                    );
+                  } else if (state is SendOtpFailure) {
+                    CustomSnackbar.show(
+                      context,
+                      message: state.error,
+                      type: SnackbarType.error,
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is SendOtpLoadingState) {
+                    return Customloginloadingbutton();
+                  }
+                  return Customloginbutton(
+                    onPressed: () {
+                      if (fromKey.currentState!.validate()) {
+                        context.read<SendOtpBloc>().add(
+                          SendOtpButtonClickEvent(
+                            mobileNumber: _mobileController.text,
+                          ),
+                        );
+                      }
+                      else{
+                          CustomSnackbar.show(
+    context,
+    message: 'Please fill all required fields',
+    type: SnackbarType.error,
+  );
+                      }
                     },
+                    text: 'Login',
                   );
                 },
-                text: 'Login',
               ),
               ResponsiveSizedBox.height10,
               Divider(),
@@ -128,8 +165,6 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
                   CustomNavigation.pushNamedWithTransition(
                     context,
                     AppRouter.register,
-                    beginOffset: Offset(0.0, 1.0), // Slide from bottom
-                    curve: Curves.bounceOut,
                   );
                 },
               ),
@@ -143,8 +178,6 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
                   CustomNavigation.pushNamedWithTransition(
                     context,
                     AppRouter.requestform,
-                    beginOffset: Offset(0.0, 1.0), // Slide from bottom
-                    curve: Curves.bounceOut,
                   );
                 },
               ),
@@ -223,10 +256,7 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.white.withOpacity(0.8),
-            Colors.white.withOpacity(0.6),
-          ],
+          colors: [Colors.white.withAlpha(277), Colors.white.withAlpha(244)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -299,300 +329,3 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
     );
   }
 }
-// ////////////////////////////////////////////
-// import 'package:flutter/material.dart';
-// import 'package:qcms/core/appconstants.dart';
-// import 'package:qcms/core/colors.dart';
-// import 'package:qcms/core/constants.dart';
-// import 'package:qcms/core/responsiveutils.dart';
-// import 'package:qcms/widgets/custom_loginbutton.dart';
-
-// class ScreenLoginpage extends StatefulWidget {
-//   const ScreenLoginpage({super.key});
-
-//   @override
-//   QCMSLoginScreenState createState() => QCMSLoginScreenState();
-// }
-
-// class QCMSLoginScreenState extends State<ScreenLoginpage> with TickerProviderStateMixin {
-//   final TextEditingController _mobileController = TextEditingController();
-//   final FocusNode _mobileFocusNode = FocusNode();
-//   late AnimationController _animationController;
-//   late Animation<double> _fadeAnimation;
-//   late Animation<Offset> _slideAnimation;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _animationController = AnimationController(
-//       duration: Duration(milliseconds: 1200),
-//       vsync: this,
-//     );
-    
-//     _fadeAnimation = Tween<double>(
-//       begin: 0.0,
-//       end: 1.0,
-//     ).animate(CurvedAnimation(
-//       parent: _animationController,
-//       curve: Curves.easeInOut,
-//     ));
-    
-//     _slideAnimation = Tween<Offset>(
-//       begin: Offset(0, 0.3),
-//       end: Offset(0, 0),
-//     ).animate(CurvedAnimation(
-//       parent: _animationController,
-//       curve: Curves.easeOutCubic,
-//     ));
-    
-//     _animationController.forward();
-//   }
-
-//   @override
-//   void dispose() {
-//     _mobileController.dispose();
-//     _mobileFocusNode.dispose();
-//     _animationController.dispose();
-//     super.dispose();
-//   }
-
-//   Widget _buildGradientCard({required Widget child, double? height}) {
-//     return Container(
-//       height: height,
-//       decoration: BoxDecoration(
-//         gradient: LinearGradient(
-//           colors: [
-//             Colors.white.withOpacity(0.9),
-//             Colors.white.withOpacity(0.7),
-//           ],
-//           begin: Alignment.topLeft,
-//           end: Alignment.bottomRight,
-//         ),
-//         borderRadius: BorderRadius.circular(16),
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.black.withOpacity(0.1),
-//             blurRadius: 20,
-//             offset: Offset(0, 10),
-//           ),
-//         ],
-//         border: Border.all(
-//           color: Colors.white.withOpacity(0.3),
-//           width: 1,
-//         ),
-//       ),
-//       child: child,
-//     );
-//   }
-
-//   Widget _buildAnimatedTextField() {
-//     return AnimatedBuilder(
-//       animation: _mobileFocusNode,
-//       builder: (context, child) {
-//         return AnimatedContainer(
-//           duration: Duration(milliseconds: 300),
-//           decoration: BoxDecoration(
-//             gradient: LinearGradient(
-//               colors: _mobileFocusNode.hasFocus
-//                   ? [Color(0xFFE8E4F3), Color(0xFFF0ECFF)]
-//                   : [Color(0xFFE8E4F3), Color(0xFFE8E4F3)],
-//               begin: Alignment.topLeft,
-//               end: Alignment.bottomRight,
-//             ),
-//             borderRadius: BorderRadius.circular(12),
-//             border: Border.all(
-//               color: _mobileFocusNode.hasFocus 
-//                   ? Appcolors.kbordercolor.withOpacity(0.8)
-//                   : Colors.transparent,
-//               width: 2,
-//             ),
-//             boxShadow: _mobileFocusNode.hasFocus
-//                 ? [
-//                     BoxShadow(
-//                       color: Appcolors.kbordercolor.withOpacity(0.2),
-//                       blurRadius: 8,
-//                       offset: Offset(0, 4),
-//                     ),
-//                   ]
-//                 : null,
-//           ),
-//           child: TextField(
-//             controller: _mobileController,
-//             focusNode: _mobileFocusNode,
-//             keyboardType: TextInputType.phone,
-//             style: TextStyle(
-//               fontSize: 16,
-//               color: Colors.black87,
-//               fontWeight: FontWeight.w500,
-//             ),
-//             decoration: InputDecoration(
-//               hintText: 'Please enter your Mobile Number',
-//               hintStyle: TextStyle(
-//                 color: Colors.grey[500],
-//                 fontSize: 15,
-//               ),
-//               border: InputBorder.none,
-//               contentPadding: EdgeInsets.symmetric(
-//                 horizontal: 16,
-//                 vertical: 16,
-//               ),
-//               prefixIcon: Icon(
-//                 Icons.phone_android_rounded,
-//                 color: _mobileFocusNode.hasFocus 
-//                     ? Appcolors.kbordercolor 
-//                     : Colors.grey[400],
-//               ),
-//             ),
-//           ),
-//         );
-//       },
-//     );
-//   }
-
- 
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Container(
-//         decoration: BoxDecoration(
-//           gradient: LinearGradient(
-//             colors: [
-//               Color(0xFFF5F0EB),
-//               Color(0xFFF0EBE6),
-//               Color(0xFFEBE6E1),
-//             ],
-//             begin: Alignment.topCenter,
-//             end: Alignment.bottomCenter,
-//           ),
-//         ),
-//         child: SafeArea(
-//           child: SingleChildScrollView(
-//             padding: EdgeInsets.symmetric(horizontal: 24.0),
-//             child: FadeTransition(
-//               opacity: _fadeAnimation,
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 children: [
-//                   ResponsiveSizedBox.height(4),
-                  
-//                   // Logo Section with enhanced styling
-//                   SlideTransition(
-//                     position: _slideAnimation,
-//                     child: Container(
-//                       height: ResponsiveUtils.hp(12),
-//                       width: double.infinity,
-//                       padding: EdgeInsets.all(20),
-//                       decoration: BoxDecoration(
-//                         gradient: LinearGradient(
-//                           colors: [
-//                             Colors.white.withOpacity(0.9),
-//                             Colors.white.withOpacity(0.7),
-//                           ],
-//                           begin: Alignment.topLeft,
-//                           end: Alignment.bottomRight,
-//                         ),
-//                         borderRadius: BorderRadius.circular(20),
-//                         boxShadow: [
-//                           BoxShadow(
-//                             color: Colors.black.withOpacity(0.1),
-//                             blurRadius: 20,
-//                             offset: Offset(0, 10),
-//                           ),
-//                         ],
-//                       ),
-//                       child: Image.asset(
-//                         Appconstants.appLogo,
-//                         fit: BoxFit.contain,
-//                         errorBuilder: (context, error, stackTrace) {
-//                           return Container(
-//                             decoration: BoxDecoration(
-//                               gradient: LinearGradient(
-//                                 colors: [
-//                                   Appcolors.kbordercolor.withOpacity(0.8),
-//                                   Appcolors.kbordercolor.withOpacity(0.6),
-//                                 ],
-//                                 begin: Alignment.topLeft,
-//                                 end: Alignment.bottomRight,
-//                               ),
-//                               borderRadius: BorderRadius.circular(12),
-//                             ),
-//                             child: Icon(
-//                               Icons.apartment_rounded,
-//                               size: 40,
-//                               color: Colors.white,
-//                             ),
-//                           );
-//                         },
-//                       ),
-//                     ),
-//                   ),
-
-//                   ResponsiveSizedBox.height20,
-                  
-//                   SlideTransition(
-//                     position: _slideAnimation,
-//                     child: Column(
-//                       children: [
-//                         TextStyles.subheadline(text: 'Welcome to QCMS'),
-//                         SizedBox(height: 8),
-//                         Text(
-//                           'Quarter Colony Management System',
-//                           style: TextStyle(
-//                             fontSize: 14,
-//                             color: Colors.grey[600],
-//                             letterSpacing: 0.5,
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-
-//                   ResponsiveSizedBox.height(4),
-
-//                   // Login Form Card
-//                   SlideTransition(
-//                     position: _slideAnimation,
-//                     child: _buildGradientCard(
-//                       child: Padding(
-//                         padding: EdgeInsets.all(24),
-//                         child: Column(
-//                           crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             Row(
-//                               children: [
-//                                 Icon(
-//                                   Icons.login_rounded,
-//                                   color: Appcolors.kbordercolor,
-//                                   size: 20,
-//                                 ),
-//                                 SizedBox(width: 8),
-//                                 TextStyles.body(
-//                                   text: 'Mobile Number*',
-//                                   weight: FontWeight.w600,
-//                                 ),
-//                               ],
-//                             ),
-//                             ResponsiveSizedBox.height10,
-//                             _buildAnimatedTextField(),
-//                             ResponsiveSizedBox.height20,
-//                             Customloginbutton(
-//                               onPressed: () {},
-//                               text: 'Login',
-//                             ),
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-
-       
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

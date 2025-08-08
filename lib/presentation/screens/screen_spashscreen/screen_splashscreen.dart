@@ -2,17 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:qcms/core/appconstants.dart';
 import 'package:qcms/core/colors.dart';
-
-class AppColors {
-  static const kprimarycolor = Color.fromARGB(255, 146, 28, 28);
-  static const kbordercolor = Color.fromARGB(255, 177, 81, 81);
-  static const ksecondarycolor = Color.fromARGB(255, 235, 79, 27);
-  static const kblackcolor = Colors.black;
-  static const kwhitecolor = Colors.white;
-  static const kgreencolor = Colors.green;
-  static const kredcolor = Colors.red;
-  static const kbackgroundcolor = Color.fromARGB(255, 250, 236, 233);
-}
+import 'package:qcms/widgets/custom_routes.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -76,6 +66,7 @@ class _SplashScreenState extends State<SplashScreen>
         Tween<Offset>(begin: const Offset(0.0, 0.3), end: Offset.zero).animate(
           CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic),
         );
+    _navigateToNextScreen();
   }
 
   void _startAnimationSequence() async {
@@ -92,11 +83,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateToNextScreen() {
-    // Replace this with your navigation logic
-    // Navigator.of(context).pushReplacement(
-    //   MaterialPageRoute(builder: (context) => HomeScreen()),
-    // );
-    print("Navigate to next screen");
+    CustomNavigation.pushNamedWithTransition(context, AppRouter.login);
   }
 
   @override
@@ -110,14 +97,14 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          AppColors.kbackgroundcolor, // Set initial background color
+          Appcolors.kbackgroundcolor, // Set initial background color
       body: AnimatedBuilder(
         animation: Listenable.merge([_logoController, _textController]),
         builder: (context, child) {
           return Container(
             width: double.infinity,
             height: double.infinity,
-            color: AppColors.kbackgroundcolor,
+            color: Appcolors.kbackgroundcolor,
             child: Stack(
               children: [
                 // Main content
@@ -141,9 +128,9 @@ class _SplashScreenState extends State<SplashScreen>
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                   colors: [
-                                    AppColors.kprimarycolor,
-                                    AppColors.ksecondarycolor,
-                                    AppColors.kbordercolor,
+                                    Appcolors.kprimarycolor,
+                                    Appcolors.ksecondarycolor,
+                                    Appcolors.kbordercolor,
                                   ],
                                 ),
                               ),
@@ -152,7 +139,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 height: 150,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: AppColors.kprimarycolor,
+                                  color: Appcolors.kprimarycolor,
                                 ),
                                 child: Center(
                                   child: SizedBox(
@@ -184,11 +171,11 @@ class _SplashScreenState extends State<SplashScreen>
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.kprimarycolor,
+                                  color: Appcolors.kprimarycolor,
                                   letterSpacing: 1.5,
                                   shadows: [
                                     Shadow(
-                                      color: AppColors.kprimarycolor.withAlpha(
+                                      color: Appcolors.kprimarycolor.withAlpha(
                                         77,
                                       ),
                                       offset: const Offset(0, 2),
@@ -204,8 +191,8 @@ class _SplashScreenState extends State<SplashScreen>
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      AppColors.ksecondarycolor,
-                                      AppColors.kprimarycolor,
+                                      Appcolors.ksecondarycolor,
+                                      Appcolors.kprimarycolor,
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(2),
@@ -216,7 +203,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 'Welcome to Qcomplaints',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: AppColors.kprimarycolor.withAlpha(200),
+                                  color: Appcolors.kprimarycolor.withAlpha(200),
                                   letterSpacing: 0.5,
                                 ),
                               ),
