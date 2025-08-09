@@ -5,7 +5,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qcms/core/urls.dart';
+import 'package:qcms/data/profilemodel.dart';
 import 'package:qcms/data/register_newdivision.dart';
+import 'package:qcms/data/register_newquarters.dart';
+import 'package:qcms/widgets/custom_sharedpreferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -188,68 +191,105 @@ class LoginRepo {
       );
     }
   }
+  ///////////// register quarters/////////////
+  Future<ApiResponse> registerquarters({required RegisterNewquartersModel quarters}) async {
+    try {
+      // final token = await getUserToken();
+      Response response = await dio.post(
+        Endpoints.registerquarters,data: quarters
+        //options: Options(headers: {'Authorization': token}),
+      );
 
+      final responseData = response.data;
+      log('quartersssssssss${responseData['status']}');
+      log('quartersssssssss${responseData['message']}');
+      if (!responseData["error"] && responseData["status"] == 200) {
+         return ApiResponse(
+          data:null,
+          message: responseData['message'] ?? 'Success',
+          error: false,
+          status: responseData["status"],
+        );
+      } else {
+        return ApiResponse(
+          data: null,
+          message: responseData['message'] ?? 'Something went wrong',
+          error: true,
+          status: responseData["status"],
+        );
+      }
+    } on DioException catch (e) {
+      debugPrint(e.message);
+      log(e.toString());
+      return ApiResponse(
+        data: null,
+        message: 'Network or server error occurred',
+        error: true,
+        status: 500,
+      );
+    }
+  }
 // ////////////////fetchprofile///////////////////
-//   Future<ApiResponse<Profilemodel>> fetchprofile() async {
-//     try {
-//       final token = await getUserToken();
-//       log(token);
-//       Response response = await dio.get(
-//         Endpoints.fetchprofile,
-//         options: Options(headers: {'Authorization': token}),
-//       );
-//       log("Response received: ${response.statusCode}");
-//       final responseData = response.data;
-//       log("Response data: $responseData");
-//            if (responseData['message']=="Expired token") {
-//             SharedPreferences preferences =
-//                             await SharedPreferences.getInstance();
-//                               await preferences.remove('USER_TOKEN');
-//                         // await preferences.clear();
-//         }
-//       if (!responseData["error"] && responseData["status"] == 200) {
-//         final user = Profilemodel.fromJson(responseData["data"]);
+  Future<ApiResponse<Profilemodel>> fetchprofile() async {
+    try {
+      final token = await getUserToken();
+      log(token);
+      Response response = await dio.get(
+        Endpoints.fetchprofile,
+        options: Options(headers: {'Authorization': token}),
+      );
+      log("Response received: ${response.statusCode}");
+      final responseData = response.data;
+      log("Response data: $responseData");
+        //    if (responseData['message']=="Expired token") {
+        //     SharedPreferences preferences =
+        //                     await SharedPreferences.getInstance();
+        //                       await preferences.remove('USER_TOKEN');
+        //                 // await preferences.clear();
+        // }
+      if (!responseData["error"] && responseData["status"] == 200) {
+        final user = Profilemodel.fromJson(responseData["data"]);
    
         
-//         //SharedPreferences preferences = await SharedPreferences.getInstance();
+        //SharedPreferences preferences = await SharedPreferences.getInstance();
 
-//         // preferences.setString(
-//         //     'USER_PUSHTOKEN', responseData["data"]["pushToken"]);
+        // preferences.setString(
+        //     'USER_PUSHTOKEN', responseData["data"]["pushToken"]);
 
-//         return ApiResponse(
-//           data: user,
-//           message: responseData['message'] ?? 'Success',
-//           error: false,
-//           status: responseData["status"],
-//         );
-//       } else {
-//         return ApiResponse(
-//           data: null,
-//           message: responseData['message'] ?? 'Something went wrong',
-//           error: true,
-//           status: responseData["status"],
-//         );
-//       }
-//     } on DioException catch (e) {
-//       debugPrint(e.message);
-//       log(e.toString());
-//       return ApiResponse(
-//         data: null,
-//         message: 'Network or server error occurred',
-//         error: true,
-//         status: 500,
-//       );
-//     } catch (e) {
-//       // Add a general catch block for other exceptions
-//       log("Unexpected error: $e");
-//       return ApiResponse(
-//         data: null,
-//         message: 'Unexpected error: $e',
-//         error: true,
-//         status: 500,
-//       );
-//     }
-//   }
+        return ApiResponse(
+          data: user,
+          message: responseData['message'] ?? 'Success',
+          error: false,
+          status: responseData["status"],
+        );
+      } else {
+        return ApiResponse(
+          data: null,
+          message: responseData['message'] ?? 'Something went wrong',
+          error: true,
+          status: responseData["status"],
+        );
+      }
+    } on DioException catch (e) {
+      debugPrint(e.message);
+      log(e.toString());
+      return ApiResponse(
+        data: null,
+        message: 'Network or server error occurred',
+        error: true,
+        status: 500,
+      );
+    } catch (e) {
+      // Add a general catch block for other exceptions
+      log("Unexpected error: $e");
+      return ApiResponse(
+        data: null,
+        message: 'Unexpected error: $e',
+        error: true,
+        status: 500,
+      );
+    }
+  }
 // ///////////////////////updateprofile///////////////////////
 
 //   Future<ApiResponse> updateprofile({required String username, required String emailadress}) async {

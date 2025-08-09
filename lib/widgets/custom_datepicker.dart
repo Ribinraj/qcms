@@ -54,7 +54,6 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
               onSurface: Colors.black87,
               secondary: Appcolors.ksecondarycolor,
             ),
-            dialogBackgroundColor: Colors.white,
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 foregroundColor: Appcolors.kprimarycolor,
@@ -63,7 +62,7 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-            ),
+            ), dialogTheme: DialogThemeData(backgroundColor: Colors.white),
           ),
           child: child!,
         );

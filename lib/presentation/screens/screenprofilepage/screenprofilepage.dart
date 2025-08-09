@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:qcms/core/colors.dart';
-import 'package:qcms/core/constants.dart';
+
 import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/presentation/blocs/bloc/fetch_profile_bloc.dart';
+
 import 'package:qcms/widgets/custom_appbar.dart';
 
 class Screenprofilepage extends StatefulWidget {
@@ -12,6 +17,19 @@ class Screenprofilepage extends StatefulWidget {
 }
 
 class _ScreenComplaintdetailsPageState extends State<Screenprofilepage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<FetchProfileBloc>().add(FetchProfileInitialEvent());
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    final DateFormat dateFormat = DateFormat('MMM dd, yyyy');
+    final DateFormat timeFormat = DateFormat('hh:mm a');
+    return '${dateFormat.format(dateTime)} at ${timeFormat.format(dateTime)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,29 +58,51 @@ class _ScreenComplaintdetailsPageState extends State<Screenprofilepage> {
             ),
 
             // Details Card
-            Container(
-              color: const Color.fromARGB(255, 255, 255, 255),
-              child: Column(
-                children: [
-                  _buildDetailRow('Flat#', '13097'),
-                  _buildDivider(),
-                  _buildDetailRow('Flat Type', 'Type_1'),
-                  _buildDivider(),
-                  _buildDetailRow('Roof Type', 'RCC'),
-                  _buildDivider(),
-                  _buildDetailRow('Flat Status', 'OCCUPIED'),
-                  _buildDivider(),
-                  _buildDetailRow('Occupant Name', 'ANAND JAIN'),
-                  _buildDivider(),
-                  _buildDetailRow('Occupant Mobile', '99344595555'),
-                  _buildDivider(),
-                  _buildDetailRow('Quarters Status', 'GOOD'),
+            BlocBuilder<FetchProfileBloc, FetchProfileState>(
+              builder: (context, state) {
+                if (state is FetchProfileLoadingState) {
+                  return Container(
+                    height: ResponsiveUtils.hp(45),
+                    color: Appcolors.kwhitecolor,
+                    child: Center(
+                      child: SpinKitCircle(
+                        size: 45,
+                        color: Appcolors.ksecondarycolor,
+                      ),
+                    ),
+                  );
+                } else if (state is FetchProfileErrorState) {
+                  return Center(child: Text(state.message));
+                } else if (state is FetchProfileSuccessState) {
+                  final user = state.user;
+                  return Container(
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    child: Column(
+                      children: [
+                        _buildDetailRow('Flat#', user.flatId),
+                        _buildDivider(),
+                        _buildDetailRow('Flat Type', user.quarterType),
+                        _buildDivider(),
+                        _buildDetailRow('Roof Type', user.quarterRoofType),
+                        _buildDivider(),
+                        _buildDetailRow('Flat Status', user.quarterStatus),
+                        _buildDivider(),
+                        _buildDetailRow('Occupant Name', user.occupantName),
+                        _buildDivider(),
+                        _buildDetailRow('Occupant Mobile', user.occupantMobile),
+                        _buildDivider(),
+                        _buildDetailRow('Quarters Status', user.quartersStatus),
 
-                  _buildDivider(),
-                  _buildDetailRow('Last Updated', '04-07-2025 4:40AM'),
-                  _buildDivider(),
-                ],
-              ),
+                        _buildDivider(),
+                        _buildDetailRow('Last Updated', user.lastModified),
+                        _buildDivider(),
+                      ],
+                    ),
+                  );
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
             ),
             // ResponsiveSizedBox.height30,
             // Align(

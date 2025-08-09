@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qcms/presentation/blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
 import 'package:qcms/presentation/screens/screen_complaintdetails/screen_complaintdetails_page.dart';
 import 'package:qcms/presentation/screens/screen_loginpage/screen_loginpage.dart';
 import 'package:qcms/presentation/screens/screen_mainpage/screen_mainpage.dart';
@@ -243,20 +245,20 @@ class CustomNavigation {
 }
 
 // Updated navigation functions for your specific use case
-// void navigateToMainPageNamed(BuildContext context, int pageIndex) {
-//   CustomNavigation.pushReplacementNamedWithTransition(
-//     context,
-//     AppRouter.main,
-//     arguments: {'pageIndex': pageIndex},
-//     beginOffset: Offset.zero, // For fade transition
-//   );
+void navigateToMainPageNamed(BuildContext context, int pageIndex) {
+  CustomNavigation.pushReplacementNamedWithTransition(
+    context,
+    AppRouter.mainpage,
+    arguments: {'pageIndex': pageIndex},
+    beginOffset: Offset.zero, // For fade transition
+  );
 
-//   Future.delayed(const Duration(milliseconds: 100), () {
-//     BlocProvider.of<BottomNavigationBloc>(context).add(
-//       NavigateToPageEvent(pageIndex: pageIndex),
-//     );
-//   });
-// }
+  Future.delayed(const Duration(milliseconds: 100), () {
+    BlocProvider.of<BottomNavigationBloc>(context).add(
+      NavigateToPageEvent(pageIndex: pageIndex),
+    );
+  });
+}
 
 // void navigateToCartPageAfterLoginNamed(BuildContext context) {
 //   CustomNavigation.pushNamedAndRemoveUntil(

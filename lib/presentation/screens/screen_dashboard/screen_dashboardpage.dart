@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
+import 'package:qcms/presentation/blocs/fetch_dashboard_bloc/fetch_dashboard_bloc.dart';
 import 'package:qcms/widgets/custom_appbar.dart';
+import 'package:qcms/widgets/custom_routes.dart';
 
 class ScreenDashboardpage extends StatefulWidget {
   const ScreenDashboardpage({super.key});
@@ -11,6 +14,13 @@ class ScreenDashboardpage extends StatefulWidget {
 }
 
 class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<FetchDashboardBloc>().add(FetchDashboardInitialEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +37,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       'Indian Railways',
@@ -43,8 +53,17 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                     Text(
                       'Quarters Complaint Management System',
                       style: TextStyle(
-                        fontSize: 16,
-                        color: Appcolors.kwhitecolor,
+                        fontSize: 15,
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    ResponsiveSizedBox.height5,
+                    Text(
+                      'Designed & Developed by Crisant technologies',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: const Color.fromARGB(255, 231, 142, 40),
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -53,45 +72,90 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
               ),
             ),
 
-            const SizedBox(height: 30),
+            ResponsiveSizedBox.height40,
 
             // Stats Cards Grid
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.1,
-              children: [
-                _buildStatCard(
-                  title: 'Total Complaints',
-                  value: '1',
-                  icon: Icons.assignment,
-                  color: Appcolors.ksecondarycolor,
-                ),
-                _buildStatCard(
-                  title: 'Open Complaints',
-                  value: '0',
-                  icon: Icons.pending_actions,
-                  color: Appcolors.ksecondarycolor,
-                ),
-                _buildStatCard(
-                  title: 'Assigned Complaints',
-                  value: '1',
-                  icon: Icons.assignment_ind,
-                  color: Appcolors.ksecondarycolor,
-                ),
-                _buildStatCard(
-                  title: 'Resolved Complaints',
-                  value: '0',
-                  icon: Icons.check_circle,
-                  color: Appcolors.ksecondarycolor,
-                ),
-              ],
+            BlocBuilder<FetchDashboardBloc, FetchDashboardState>(
+              builder: (context, state) {
+                if (state is FetchDashboardLoadingState) {
+                  return GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 1.1,
+                    children: [
+                      _buildStatCard(
+                        title: 'Total Complaints',
+                        value: '...',
+
+                        color: Appcolors.ksecondarycolor,
+                      ),
+                      _buildStatCard(
+                        title: 'Open Complaints',
+                        value: '...',
+
+                        color: Appcolors.ksecondarycolor,
+                      ),
+                      _buildStatCard(
+                        title: 'Assigned Complaints',
+                        value: '...',
+
+                        color: Appcolors.ksecondarycolor,
+                      ),
+                      _buildStatCard(
+                        title: 'Resolved Complaints',
+                        value: '...',
+
+                        color: Appcolors.ksecondarycolor,
+                      ),
+                    ],
+                  );
+                } else if (state is FetchDashboardErrorState) {
+                  return Center(child: Text(state.message));
+                } else if (state is FetchDashboardSuccessState) {
+                  return GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 1.1,
+                    children: [
+                      _buildStatCard(
+                        title: 'Total Complaints',
+                        value: state.dashboard.totalComplaints,
+
+                        color: Appcolors.ksecondarycolor,
+                      ),
+                      _buildStatCard(
+                        title: 'Open Complaints',
+                        value: state.dashboard.openComplaints,
+
+                        color: Appcolors.ksecondarycolor,
+                      ),
+                      _buildStatCard(
+                        title: 'Assigned Complaints',
+                        value: state.dashboard.wipComplaints,
+
+                        color: Appcolors.ksecondarycolor,
+                      ),
+                      _buildStatCard(
+                        title: 'Resolved Complaints',
+                        value: state.dashboard.completedComplaints,
+
+                        color: Appcolors.ksecondarycolor,
+                      ),
+                    ],
+                  );
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
             ),
 
-            const SizedBox(height: 30),
+            ResponsiveSizedBox.height40,
 
             // Action Buttons
             Row(
@@ -101,7 +165,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                     title: 'New Complaint',
                     icon: Icons.add,
                     onPressed: () {
-                      // Handle new complaint
+                      navigateToMainPageNamed(context, 1);
                     },
                     color: Appcolors.kprimarycolor,
                   ),
@@ -112,7 +176,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                     title: 'View Complaints',
                     icon: Icons.visibility,
                     onPressed: () {
-                      // Handle view complaints
+                      navigateToMainPageNamed(context, 2);
                     },
                     color: Appcolors.ksecondarycolor,
                   ),
@@ -128,7 +192,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
   Widget _buildStatCard({
     required String title,
     required String value,
-    required IconData icon,
+
     required Color color,
   }) {
     return CustomPaint(

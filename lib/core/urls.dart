@@ -6,4 +6,7 @@ class Endpoints {
   static const registerdivison = 'consumer/login/newdivision';
   static const fetchdevisions = 'consumer/masters/divisions';
   static const fetchquarters = 'consumer/masters/quarters';
+  static const registerquarters = 'consumer/login/register';
+  static const fetchdashboard = 'consumer/login/dashboard';
+  static const fetchprofile = 'consumer/login/profile';
 }
