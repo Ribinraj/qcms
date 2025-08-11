@@ -86,16 +86,27 @@
 //   }
 // }
 ////////////////////////////////////////////
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
 import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/data/complaintrequest_model.dart';
+import 'package:qcms/presentation/blocs/fetch_complaint_categories/fetch_complaint_categories_bloc.dart';
+
+import 'package:qcms/presentation/blocs/fetch_departments_bloc/fetch_departments_bloc.dart';
+import 'package:qcms/presentation/blocs/request_complaint_model/request_complaint_bloc.dart';
 import 'package:qcms/widgets/custom_appbar.dart';
 import 'package:qcms/widgets/custom_datepicker.dart';
-import 'package:qcms/widgets/custom_dropdown.dart';
+import 'package:qcms/widgets/custom_login_loadingbutton.dart';
+
 import 'package:qcms/widgets/custom_loginbutton.dart';
+import 'package:qcms/widgets/custom_searchdropdown.dart';
+import 'package:qcms/widgets/custom_snackbar.dart';
 import 'package:qcms/widgets/custom_textfield.dart';
 
 class ScreenNewcomplaintpage extends StatefulWidget {
@@ -107,14 +118,405 @@ class ScreenNewcomplaintpage extends StatefulWidget {
 
 class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
   final TextEditingController remarksController = TextEditingController();
-  String? selectedDepartment;
-  String? selectedComplaintCategory;
+  DropdownItem? selectedDepartment;
+  DropdownItem? selectedComplaintCategory;
   DateTime? selectedDateTime;
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
 
-  final List<String> departments = ['mysore', 'calicut', 'cochin'];
-  final List<String> complaintCategories = ['Roof', 'Floor', 'Wall'];
+  // final List<String> departments = ['mysore', 'calicut', 'cochin'];
+  // final List<String> complaintCategories = ['Roof', 'Floor', 'Wall'];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<FetchDepartmentsBloc>().add(FetchDepartmentsInitialEvent());
+    context.read<FetchComplaintCategoriesBloc>().add(
+      FetchComplaintCategoriesInitialEvent(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
+      appBar: CustomAppBar(title: 'New Complaint'),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Section
+            _buildSectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Appcolors.ksecondarycolor.withAlpha(33),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.apartment,
+                          color: Appcolors.ksecondarycolor,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextStyles.headline(text: 'Register your flat'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextStyles.body(
+                    text:
+                        'If your division and quarters are listed but your flat is missing, please register your flat here',
+                  ),
+                ],
+              ),
+            ),
+
+            ResponsiveSizedBox.height20,
+
+            // Form Section
+            _buildSectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Department Field
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.business,
+                        color: Appcolors.ksecondarycolor,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      TextStyles.body(text: 'Department*'),
+                    ],
+                  ),
+                  ResponsiveSizedBox.height5,
+                  BlocBuilder<FetchDepartmentsBloc, FetchDepartmentsState>(
+                    builder: (context, state) {
+                      if (state is FetchDepartmentsLoadingState) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE8E4F3),
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Appcolors.kprimarycolor,
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                          width: ResponsiveUtils.screenWidth,
+                          padding: EdgeInsets.all(15),
+                          child: SpinKitWave(
+                            size: 15,
+                            color: Appcolors.ksecondarycolor,
+                          ),
+                        );
+                      } else if (state is FetchDepartmentsErrorState) {
+                        return Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            border: Border.all(color: Colors.red.shade200),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                color: Colors.red.shade600,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  state.message,
+                                  style: TextStyle(color: Colors.red.shade700),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else if (state is FetchDepartmentsSuccessState) {
+                        final departmentItems = state.departments
+                            .map(
+                              (department) => DropdownItem(
+                                id: department.departmentId,
+                                display: department.departmentName,
+                              ),
+                            )
+                            .toList();
+
+                        return CustomSearchDropdown(
+                          value: selectedDepartment,
+                          hintText: 'Please select department',
+                          items: departmentItems,
+                          enableSearch: true,
+                          searchHintText: 'Search departments...',
+                          onChanged: (value) {
+                            setState(() {
+                              selectedDepartment = value;
+                            });
+                            if (value != null) {
+                              print('Selected departments ID: ${value.id}');
+                              print(
+                                'Selected departments Name: ${value.display}',
+                              );
+                            }
+                          },
+                        );
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    },
+                  ),
+
+                  ResponsiveSizedBox.height15,
+
+                  // Complaint Category Field
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.category,
+                        color: Appcolors.ksecondarycolor,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      TextStyles.body(text: 'Complaint Category*'),
+                    ],
+                  ),
+                  ResponsiveSizedBox.height5,
+                  BlocBuilder<
+                    FetchComplaintCategoriesBloc,
+                    FetchComplaintCategoriesState
+                  >(
+                    builder: (context, state) {
+                      if (state is FetchComplaintCategoriesLoadingState) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE8E4F3),
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Appcolors.kprimarycolor,
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                          width: ResponsiveUtils.screenWidth,
+                          padding: EdgeInsets.all(15),
+                          child: SpinKitWave(
+                            size: 15,
+                            color: Appcolors.ksecondarycolor,
+                          ),
+                        );
+                      } else if (state is FetchComplaintCategoriesErrorState) {
+                        return Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            border: Border.all(color: Colors.red.shade200),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                color: Colors.red.shade600,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  state.message,
+                                  style: TextStyle(color: Colors.red.shade700),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else if (state
+                          is FetchComplaintCategoriesSuccessState) {
+                        final complaintCategories = state.complaints
+                            .map(
+                              (complaint) => DropdownItem(
+                                id: complaint.categoryId,
+                                display: complaint.categoryName,
+                              ),
+                            )
+                            .toList();
+
+                        return CustomSearchDropdown(
+                          value: selectedComplaintCategory,
+                          hintText: 'Please select Category',
+                          items: complaintCategories,
+                          enableSearch: true,
+                          searchHintText: 'Search categories...',
+                          onChanged: (value) {
+                            setState(() {
+                              selectedComplaintCategory = value;
+                            });
+                            if (value != null) {
+                              print('Selected category ID: ${value.id}');
+                              print('Selected category Name: ${value.display}');
+                            }
+                          },
+                        );
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    },
+                  ),
+
+                  ResponsiveSizedBox.height15,
+
+                  // Date Time Field
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.schedule,
+                        color: Appcolors.ksecondarycolor,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextStyles.body(
+                          text: 'Preferred Date & Time for Artisan\'s visit',
+                        ),
+                      ),
+                    ],
+                  ),
+                  ResponsiveSizedBox.height5,
+                  CustomDateTimePicker(
+                    hintText: "Select appointment time",
+                    selectedDateTime: selectedDateTime,
+                    onChanged: (DateTime? dateTime) {
+                      setState(() {
+                        selectedDateTime = dateTime;
+                      });
+                      print('Selected: $dateTime');
+                    },
+                  ),
+
+                  ResponsiveSizedBox.height15,
+
+                  // Remarks Field
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.note_alt,
+                        color: Appcolors.ksecondarycolor,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      TextStyles.body(text: 'Remarks (Optional)'),
+                    ],
+                  ),
+                  ResponsiveSizedBox.height5,
+                  CustomTextField(
+                    controller: remarksController,
+                    hintText: 'Enter your remarks',
+                  ),
+                ],
+              ),
+            ),
+
+            ResponsiveSizedBox.height20,
+
+            // Image Upload Section
+            _buildSectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.photo_camera,
+                        color: Appcolors.ksecondarycolor,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      TextStyles.body(text: 'Upload Image (Optional)'),
+                    ],
+                  ),
+                  ResponsiveSizedBox.height20,
+                  Text(
+                    'Add a photo to help us understand the issue better',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                  ResponsiveSizedBox.height15,
+                  _buildImagePickerContainer(),
+                ],
+              ),
+            ),
+            ResponsiveSizedBox.height30,
+            // Submit Button
+            BlocConsumer<RequestComplaintBloc, RequestComplaintState>(
+              listener: (context, state) {
+                if (state is RequestComplaintSuccessState) {
+                  CustomSnackbar.show(
+                    context,
+                    message: state.message,
+                    type: SnackbarType.success,
+                  );
+                } else if (state is RequestComplaintErrorState) {
+                  CustomSnackbar.show(
+                    context,
+                    message: state.message,
+                    type: SnackbarType.error,
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is RequestComplaintLoadingState) {
+                  return Customloginloadingbutton();
+                }
+                return Customloginbutton(
+                  onPressed: () async {
+                    // // Handle form submission
+                    // print('Department: $selectedDepartment');
+                    // print('Category: $selectedComplaintCategory');
+                    // print('DateTime: $selectedDateTime');
+                    // print('Remarks: ${remarksController.text}');
+                    // print('Image: ${_selectedImage?.path}');
+                    String? base64Image;
+                    if (_selectedImage != null) {
+                      final bytes = await File(
+                        _selectedImage!.path,
+                      ).readAsBytes();
+                      base64Image = base64Encode(bytes);
+                      print('Base64 Image: $base64Image');
+                    } else {
+                      print('No image selected');
+                    }
+                    context.read<RequestComplaintBloc>().add(
+                      RequestComplaintButtonClickEvent(
+                        complaint: ComplaintRequestModel(
+                          departmentId: int.parse(selectedDepartment!.id),
+                          categoryId: int.parse(selectedComplaintCategory!.id),
+                          complaintRemarks: remarksController.text,
+                          picture: base64Image!,
+                        ),
+                      ),
+                    );
+                  },
+                  text: 'Submit Complaint',
+                );
+              },
+            ),
+
+            ResponsiveSizedBox.height20,
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<void> _showImageSourceDialog() async {
     return showDialog<void>(
@@ -324,219 +726,6 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
         ],
       ),
       child: child,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      appBar: CustomAppBar(title: 'New Complaint'),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section
-            _buildSectionCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Appcolors.ksecondarycolor.withAlpha(33),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.apartment,
-                          color: Appcolors.ksecondarycolor,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextStyles.headline(text: 'Register your flat'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextStyles.body(
-                    text:
-                        'If your division and quarters are listed but your flat is missing, please register your flat here',
-                  ),
-                ],
-              ),
-            ),
-
-            ResponsiveSizedBox.height20,
-
-            // Form Section
-            _buildSectionCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Department Field
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.business,
-                        color: Appcolors.ksecondarycolor,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      TextStyles.body(text: 'Department*'),
-                    ],
-                  ),
-                  ResponsiveSizedBox.height5,
-                  CustomDropdown(
-                    value: selectedDepartment,
-                    hintText: 'Please select Department',
-                    items: departments,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedDepartment = value;
-                      });
-                      print('Selected department: $value');
-                    },
-                  ),
-
-                  ResponsiveSizedBox.height15,
-
-                  // Complaint Category Field
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.category,
-                        color: Appcolors.ksecondarycolor,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      TextStyles.body(text: 'Complaint Category*'),
-                    ],
-                  ),
-                  ResponsiveSizedBox.height5,
-                  CustomDropdown(
-                    value: selectedComplaintCategory,
-                    hintText: 'Please select Category',
-                    items: complaintCategories,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedComplaintCategory = value;
-                      });
-                      print('Selected category: $value');
-                    },
-                  ),
-
-                  ResponsiveSizedBox.height15,
-
-                  // Date Time Field
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.schedule,
-                        color: Appcolors.ksecondarycolor,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextStyles.body(
-                          text: 'Preferred Date & Time for Artisan\'s visit',
-                        ),
-                      ),
-                    ],
-                  ),
-                  ResponsiveSizedBox.height5,
-                  CustomDateTimePicker(
-                    hintText: "Select appointment time",
-                    selectedDateTime: selectedDateTime,
-                    onChanged: (DateTime? dateTime) {
-                      setState(() {
-                        selectedDateTime = dateTime;
-                      });
-                      print('Selected: $dateTime');
-                    },
-                  ),
-
-                  ResponsiveSizedBox.height15,
-
-                  // Remarks Field
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.note_alt,
-                        color: Appcolors.ksecondarycolor,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      TextStyles.body(text: 'Remarks (Optional)'),
-                    ],
-                  ),
-                  ResponsiveSizedBox.height5,
-                  CustomTextField(
-                    controller: remarksController,
-                    hintText: 'Enter your remarks',
-                  ),
-                ],
-              ),
-            ),
-
-            ResponsiveSizedBox.height20,
-
-            // Image Upload Section
-            _buildSectionCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.photo_camera,
-                        color: Appcolors.ksecondarycolor,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      TextStyles.body(text: 'Upload Image (Optional)'),
-                    ],
-                  ),
-                  ResponsiveSizedBox.height20,
-                  Text(
-                    'Add a photo to help us understand the issue better',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                  ),
-                  ResponsiveSizedBox.height15,
-                  _buildImagePickerContainer(),
-                ],
-              ),
-            ),
-            ResponsiveSizedBox.height30,
-            // Submit Button
-            Customloginbutton(
-              onPressed: () {
-                // Handle form submission
-                print('Department: $selectedDepartment');
-                print('Category: $selectedComplaintCategory');
-                print('DateTime: $selectedDateTime');
-                print('Remarks: ${remarksController.text}');
-                print('Image: ${_selectedImage?.path}');
-
-                // Show success message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Complaint submitted successfully!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              },
-              text: 'Submit Complaint',
-            ),
-
-            ResponsiveSizedBox.height20,
-          ],
-        ),
-      ),
     );
   }
 

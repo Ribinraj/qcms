@@ -1,79 +1,11 @@
-// import 'package:flutter/material.dart';
-// import 'package:qcms/core/colors.dart';
-// import 'package:qcms/core/constants.dart';
-// import 'package:qcms/widgets/custom_appbar.dart';
-
-// class ScreenMycomplaintspage extends StatefulWidget {
-//   const ScreenMycomplaintspage({super.key});
-
-//   @override
-//   State<ScreenMycomplaintspage> createState() => _ScreenMycomplaintspageState();
-// }
-
-// class _ScreenMycomplaintspageState extends State<ScreenMycomplaintspage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: CustomAppBar(title: 'View Complaints'),
-//       body: SingleChildScrollView(
-//         padding: EdgeInsets.all(15),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Container(
-//               padding: const EdgeInsets.all(16),
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(12),
-//                 boxShadow: [
-//                   BoxShadow(
-//                     color: Colors.grey.withAlpha(33),
-//                     spreadRadius: 1,
-//                     blurRadius: 6,
-//                     offset: const Offset(0, 2),
-//                   ),
-//                 ],
-//               ),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Row(
-//                     children: [
-//                       Container(
-//                         padding: const EdgeInsets.all(8),
-//                         decoration: BoxDecoration(
-//                           color: Appcolors.ksecondarycolor.withAlpha(33),
-//                           borderRadius: BorderRadius.circular(8),
-//                         ),
-//                         child: const Icon(
-//                           Icons.apartment,
-//                           color: Appcolors.ksecondarycolor,
-//                           size: 24,
-//                         ),
-//                       ),
-//                       const SizedBox(width: 12),
-//                       Expanded(
-//                         child: TextStyles.headline(text: 'View Complaints'),
-//                       ),
-//                     ],
-//                   ),
-//                   const SizedBox(height: 12),
-//                   TextStyles.body(
-//                     text: 'Please track all your complaints from here',
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-///////////////////////////////
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
+import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/presentation/blocs/fetch_complaintlists_bloc/fetch_complaintlists_bloc.dart';
 import 'package:qcms/widgets/custom_appbar.dart';
 import 'package:qcms/widgets/custom_routes.dart';
 
@@ -86,85 +18,26 @@ class ScreenMycomplaintspage extends StatefulWidget {
 
 class _ScreenMycomplaintspageState extends State<ScreenMycomplaintspage> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> complaints = [
-    {
-      'id': '1233',
-      'category': 'Water Supply',
-      'date': '2024-01-15',
-      'status': 'Cancelled',
-      'description': 'Water supply issue in apartment block A',
-    },
-    {
-      'id': '1234',
-      'category': 'Electrical',
-      'date': '2024-01-18',
-      'status': 'In Progress',
-      'description': 'Power outage in common area',
-    },
-    {
-      'id': '1235',
-      'category': 'Maintenance',
-      'date': '2024-01-20',
-      'status': 'Resolved',
-      'description': 'Elevator maintenance required',
-    },
-    {
-      'id': '1236',
-      'category': 'Plumbing',
-      'date': '2024-01-22',
-      'status': 'Pending',
-      'description': 'Pipe leakage in basement',
-    },
-    {
-      'id': '1237',
-      'category': 'Security',
-      'date': '2024-01-25',
-      'status': 'In Progress',
-      'description': 'CCTV camera not working',
-    },
-  ];
-
-  List<Map<String, String>> filteredComplaints = [];
 
   @override
   void initState() {
     super.initState();
-    filteredComplaints = complaints;
+    context.read<FetchComplaintlistsBloc>().add(FetchComplaintsInitialEvent());
   }
 
-  void _filterComplaints(String query) {
-    // Check if widget is still mounted before calling setState
-    if (!mounted) return;
-
-    setState(() {
-      if (query.isEmpty) {
-        filteredComplaints = complaints;
-      } else {
-        filteredComplaints = complaints
-            .where(
-              (complaint) =>
-                  complaint['id']!.toLowerCase().contains(
-                    query.toLowerCase(),
-                  ) ||
-                  complaint['category']!.toLowerCase().contains(
-                    query.toLowerCase(),
-                  ) ||
-                  complaint['status']!.toLowerCase().contains(
-                    query.toLowerCase(),
-                  ),
-            )
-            .toList();
-      }
-    });
+  void _onSearchChanged(String query) {
+    context.read<FetchComplaintlistsBloc>().add(
+      SearchComplaintsEvent(query: query),
+    );
   }
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'resolved':
+      case 'completed':
         return Colors.green;
-      case 'in progress':
+      case 'wip':
         return Colors.orange;
-      case 'pending':
+      case 'open':
         return Colors.blue;
       case 'cancelled':
         return Colors.red;
@@ -246,16 +119,16 @@ class _ScreenMycomplaintspageState extends State<ScreenMycomplaintspage> {
               ),
               child: TextField(
                 controller: _searchController,
-                onChanged: _filterComplaints,
+                onChanged: _onSearchChanged,
                 decoration: InputDecoration(
-                  hintText: 'Search complaints by ID, category, or status...',
+                  hintText: 'Search complaints by ID...',
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
                           icon: const Icon(Icons.clear),
                           onPressed: () {
                             _searchController.clear();
-                            _filterComplaints('');
+                            _onSearchChanged('');
                           },
                         )
                       : null,
@@ -273,36 +146,85 @@ class _ScreenMycomplaintspageState extends State<ScreenMycomplaintspage> {
               ),
             ),
 
-            const SizedBox(height: 20),
-
-            // Complaints List
-            filteredComplaints.isEmpty
-                ? Center(
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 40),
-                        Icon(
-                          Icons.search_off,
-                          size: 64,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No complaints found',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
+            ResponsiveSizedBox.height20,
+            BlocBuilder<FetchComplaintlistsBloc, FetchComplaintlistsState>(
+              builder: (context, state) {
+                if (state is FetchComplaintlistsLoadingState) {
+                  return ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: filteredComplaints.length,
+                    itemCount: 4,
                     itemBuilder: (context, index) {
-                      final complaint = filteredComplaints[index];
+                      return Container(
+                        height: ResponsiveUtils.hp(15),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withAlpha(20),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: SpinKitCircle(
+                            size: 20,
+                            color: Appcolors.ksecondarycolor,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else if (state is FetchComplaintsErrorState) {
+                  return Center(child: Text(state.message));
+                } else if (state is FetchComplaintlistSuccessState) {
+                  // Use filteredComplaints instead of complaints
+                  final complaintsToShow = state.filteredComplaints;
+                  
+                  if (complaintsToShow.isEmpty && state.searchQuery.isNotEmpty) {
+                    return Container(
+                      padding: const EdgeInsets.all(32),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.search_off,
+                              size: 64,
+                              color: Colors.grey.shade400,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No complaints found',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Try searching with a different complaint ID',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: complaintsToShow.length,
+                    itemBuilder: (context, index) {
+                      final complaint = complaintsToShow[index];
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
@@ -322,12 +244,16 @@ class _ScreenMycomplaintspageState extends State<ScreenMycomplaintspage> {
                           borderRadius: BorderRadius.circular(12),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(12),
-                            onTap: () {
-                              CustomNavigation.pushNamedWithTransition(
-                                context,
-                                AppRouter.complaintdetails,
-                              );
-                            },
+                         onTap: () {
+  CustomNavigation.pushNamedWithTransition(
+    context,
+    AppRouter.complaintdetails,
+    arguments: {
+      'complaintdetails': complaint, // your ComplaintListmodel instance
+    },
+  );
+}
+,
                             child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: Row(
@@ -343,7 +269,7 @@ class _ScreenMycomplaintspageState extends State<ScreenMycomplaintspage> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              'Complaint: #${complaint['id']}',
+                                              'Complaint: ${complaint.complaintId}',
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16,
@@ -358,16 +284,16 @@ class _ScreenMycomplaintspageState extends State<ScreenMycomplaintspage> {
                                                   ),
                                               decoration: BoxDecoration(
                                                 color: _getStatusColor(
-                                                  complaint['status']!,
+                                                  complaint.complaintStatus,
                                                 ).withAlpha(20),
                                                 borderRadius:
                                                     BorderRadius.circular(6),
                                               ),
                                               child: Text(
-                                                complaint['status']!,
+                                                complaint.complaintStatus,
                                                 style: TextStyle(
                                                   color: _getStatusColor(
-                                                    complaint['status']!,
+                                                    complaint.complaintStatus,
                                                   ),
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w600,
@@ -377,22 +303,22 @@ class _ScreenMycomplaintspageState extends State<ScreenMycomplaintspage> {
                                           ],
                                         ),
 
-                                        const SizedBox(height: 6),
+                                        ResponsiveSizedBox.height5,
 
                                         // Category
                                         Text(
-                                          'Category: ${complaint['category']}',
+                                          'Category: ${complaint.categoryId}',
                                           style: const TextStyle(
                                             fontSize: 14,
                                             color: Colors.black54,
                                           ),
                                         ),
 
-                                        const SizedBox(height: 4),
+                                        ResponsiveSizedBox.height10,
 
                                         // Date
                                         Text(
-                                          'Date: ${complaint['date']}',
+                                          'Date: ${DateFormat('d MMM yyyy').format(DateTime.parse(complaint.complaintDate))}',
                                           style: const TextStyle(
                                             fontSize: 14,
                                             color: Colors.black54,
@@ -415,7 +341,12 @@ class _ScreenMycomplaintspageState extends State<ScreenMycomplaintspage> {
                         ),
                       );
                     },
-                  ),
+                  );
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
+            ),
           ],
         ),
       ),

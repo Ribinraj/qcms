@@ -4,7 +4,11 @@ import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/responsiveutils.dart';
 import 'package:qcms/domain/repositories/apprepo.dart';
 import 'package:qcms/domain/repositories/loginrepo.dart';
-import 'package:qcms/presentation/blocs/bloc/fetch_profile_bloc.dart';
+import 'package:qcms/presentation/blocs/cancel_complaint_bloc/cancel_complaint_bloc.dart';
+import 'package:qcms/presentation/blocs/fetch_complaint_categories/fetch_complaint_categories_bloc.dart';
+import 'package:qcms/presentation/blocs/fetch_complaintlists_bloc/fetch_complaintlists_bloc.dart';
+import 'package:qcms/presentation/blocs/fetch_departments_bloc/fetch_departments_bloc.dart';
+import 'package:qcms/presentation/blocs/fetch_profile_bloc/fetch_profile_bloc.dart';
 
 import 'package:qcms/presentation/blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_dashboard_bloc/fetch_dashboard_bloc.dart';
@@ -13,6 +17,7 @@ import 'package:qcms/presentation/blocs/fetch_division_bloc/fetch_division_bloc.
 import 'package:qcms/presentation/blocs/fetch_quarters_bloc/fetch_quarters_bloc.dart';
 import 'package:qcms/presentation/blocs/register_new_division/register_newdivision_bloc.dart';
 import 'package:qcms/presentation/blocs/register_quarters_bloc/register_quarters_bloc.dart';
+import 'package:qcms/presentation/blocs/request_complaint_model/request_complaint_bloc.dart';
 
 import 'package:qcms/presentation/blocs/resend_otp_bloc/resend_otp_bloc.dart';
 import 'package:qcms/presentation/blocs/send_otp_bloc/send_otp_bloc.dart';
@@ -68,6 +73,22 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => FetchProfileBloc(repository: loginrepo),
         ),
+        BlocProvider(
+          create: (context) => FetchComplaintlistsBloc(repository: apprepo),
+        ),
+        BlocProvider(
+          create: (context) => CancelComplaintBloc(repository: apprepo),
+        ),
+        BlocProvider(
+          create: (context) => FetchDepartmentsBloc(repository: apprepo),
+        ),
+        BlocProvider(
+          create: (context) =>
+              FetchComplaintCategoriesBloc(repository: apprepo),
+        ),
+                           BlocProvider(
+            create: (context) => RequestComplaintBloc(repository:apprepo),
+          ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:qcms/core/colors.dart';
 
 import 'package:qcms/core/responsiveutils.dart';
-import 'package:qcms/presentation/blocs/bloc/fetch_profile_bloc.dart';
+import 'package:qcms/presentation/blocs/fetch_profile_bloc/fetch_profile_bloc.dart';
 
 import 'package:qcms/widgets/custom_appbar.dart';
 

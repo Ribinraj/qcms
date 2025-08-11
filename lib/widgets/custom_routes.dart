@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qcms/data/complaint_listmodel.dart';
 import 'package:qcms/presentation/blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
 import 'package:qcms/presentation/screens/screen_complaintdetails/screen_complaintdetails_page.dart';
 import 'package:qcms/presentation/screens/screen_loginpage/screen_loginpage.dart';
@@ -79,34 +80,18 @@ class AppRouter {
         } else {
           return _errorRoute('Missing required parameters for Verify OTP: flatId and mobileNumber');
         }
-  //     case profile:
-  //       final userId = args?['userId'] as String?;
-  //       final showEditButton = args?['showEditButton'] as bool? ?? true; // Default to true
-        
-  //       return MaterialPageRoute(
-  //         builder: (_) => ScreenProfilePage(
-  //           userId: userId, // Can be null
-  //           showEditButton: showEditButton, // Has default value
-  //         ),
-  //         settings: settings,
-  //       );
 
-  //     case complaintdetails:
-  //       return MaterialPageRoute(
-  //         builder: (_) => ScreenComplaintdetailsPage(),
-  //         settings: settings,
-  //       );
+    case complaintdetails:
+  final complaint = args?['complaintdetails'] as ComplaintListmodel?;
+  if (complaint != null) {
+    return MaterialPageRoute(
+      builder: (_) => ScreenComplaintdetailsPage(complaintdetails: complaint),
+      settings: settings,
+    );
+  } else {
+    return _errorRoute('Missing complaintdetails parameter for Complaint Details page');
+  }
 
-  //     default:
-  //       return _errorRoute('Route ${settings.name} not found');
-  //   }
-  // }
-      case complaintdetails:
-        return MaterialPageRoute(
-          builder: (_) =>
-              ScreenComplaintdetailsPage(), // Replace with your actual screen
-          settings: settings,
-        );
 
       default:
         return _errorRoute('Route ${settings.name} not found');

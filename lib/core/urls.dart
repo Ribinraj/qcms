@@ -9,4 +9,9 @@ class Endpoints {
   static const registerquarters = 'consumer/login/register';
   static const fetchdashboard = 'consumer/login/dashboard';
   static const fetchprofile = 'consumer/login/profile';
+  static const fetchcomplaintlists = 'consumer/complaints/list';
+  static const cancelcomplaint = 'consumer/complaints/cancel';
+  static const fetchdepartments = 'consumer/masters/departments';
+  static const fetchcomplaintcategories = 'consumer/masters/categories';
+  static const requestComplaint = 'consumer/complaints/create';
 }
