@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qcms/data/complaint_listmodel.dart';
 import 'package:qcms/presentation/blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
 import 'package:qcms/presentation/screens/screen_complaintdetails/screen_complaintdetails_page.dart';
+import 'package:qcms/presentation/screens/screen_disclaimerpage/screen_disclaimerpage.dart';
 import 'package:qcms/presentation/screens/screen_loginpage/screen_loginpage.dart';
 import 'package:qcms/presentation/screens/screen_mainpage/screen_mainpage.dart';
+import 'package:qcms/presentation/screens/screen_notificationpage/screeen_notificationpage.dart';
 import 'package:qcms/presentation/screens/screen_onbording/screen_onboarding.dart';
 import 'package:qcms/presentation/screens/screen_registerpage/screen_registerpage.dart';
 import 'package:qcms/presentation/screens/screen_requestform/screen_requestform.dart';
@@ -25,6 +27,8 @@ class AppRouter {
   static const String verifyOTP = '/verifyOTP';
   static const String complaintdetails = '/complaintdetails';
   static const String splashpage = '/splashpage';
+  static const String disclaimer = '/disclaimer';
+  static const String notification = '/notification';
 
   // Single method to generate all routes
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -64,35 +68,46 @@ class AppRouter {
               ScreenRequestformPage(), // Replace with your actual screen
           settings: settings,
         );
-           case verifyOTP:
+      case verifyOTP:
         final flatId = args?['flatId'] as String?;
         final mobileNumber = args?['mobileNumber'] as String?;
 
         // Option 1: Required parameters (your current approach)
         if (flatId != null && mobileNumber != null) {
           return MaterialPageRoute(
-            builder: (_) => ScreenVerifyOtp(
-              flatId: flatId,
-              mobileNumber: mobileNumber,
-            ),
+            builder: (_) =>
+                ScreenVerifyOtp(flatId: flatId, mobileNumber: mobileNumber),
             settings: settings,
           );
         } else {
-          return _errorRoute('Missing required parameters for Verify OTP: flatId and mobileNumber');
+          return _errorRoute(
+            'Missing required parameters for Verify OTP: flatId and mobileNumber',
+          );
         }
 
-    case complaintdetails:
-  final complaint = args?['complaintdetails'] as ComplaintListmodel?;
-  if (complaint != null) {
-    return MaterialPageRoute(
-      builder: (_) => ScreenComplaintdetailsPage(complaintdetails: complaint),
-      settings: settings,
-    );
-  } else {
-    return _errorRoute('Missing complaintdetails parameter for Complaint Details page');
-  }
-
-
+      case complaintdetails:
+        final complaint = args?['complaintdetails'] as ComplaintListmodel?;
+        if (complaint != null) {
+          return MaterialPageRoute(
+            builder: (_) =>
+                ScreenComplaintdetailsPage(complaintdetails: complaint),
+            settings: settings,
+          );
+        } else {
+          return _errorRoute(
+            'Missing complaintdetails parameter for Complaint Details page',
+          );
+        }
+      case disclaimer:
+        return MaterialPageRoute(
+          builder: (_) => DisclaimerPage(), // Replace with your actual screen
+          settings: settings,
+        );
+      case notification:
+        return MaterialPageRoute(
+          builder: (_) => NotificationPage(), // Replace with your actual screen
+          settings: settings,
+        );
       default:
         return _errorRoute('Route ${settings.name} not found');
     }
@@ -120,7 +135,6 @@ class CustomNavigation {
   }) {
     return Navigator.pushNamed<T>(context, routeName, arguments: arguments);
   }
-
 
   static Future<T?> pushNamedWithTransition<T>(
     BuildContext context,
@@ -239,9 +253,9 @@ void navigateToMainPageNamed(BuildContext context, int pageIndex) {
   );
 
   Future.delayed(const Duration(milliseconds: 100), () {
-    BlocProvider.of<BottomNavigationBloc>(context).add(
-      NavigateToPageEvent(pageIndex: pageIndex),
-    );
+    BlocProvider.of<BottomNavigationBloc>(
+      context,
+    ).add(NavigateToPageEvent(pageIndex: pageIndex));
   });
 }
 

@@ -166,6 +166,12 @@ class _ScreenComplaintdetailsPageState
                             child: BlocConsumer<CancelComplaintBloc, CancelComplaintState>(
                               listener: (context, state) {
                                 if (state is CancelComplaintSuccessState) {
+                                             context.read<FetchComplaintlistsBloc>().add(
+                        UpdateComplaintStatusEvent(
+                          complaintId: complaint.complaintId,
+                          newStatus: "CANCELLED",
+                        ),
+                      );
                                   CustomSnackbar.show(
                                     context,
                                     message: state.message,

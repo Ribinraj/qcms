@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qcms/core/colors.dart';
@@ -24,7 +25,8 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Dashboard'),
+      // appBar: const CustomAppBar(title: 'Dashboard'),
+       appBar: CustomAppBar(title: "title".tr()),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -40,7 +42,8 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Indian Railways',
+                      //'Indian Railways',
+                      "title".tr(),
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,

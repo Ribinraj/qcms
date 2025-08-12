@@ -141,56 +141,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          // Bottom section with indicators and buttons
-          // Padding(
-          //   padding: EdgeInsets.all(20),
-          //   child: Row(
-          //     // mainAxisAlignment: MainAxisAlignment.end,
-          //     children: [
-          //       // Centered Indicators
-          //       Expanded(
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           children: List.generate(
-          //             onboardingPages.length,
-          //             (index) => _buildIndicator(index),
-          //           ),
-          //         ),
-          //       ),
-          //       // Next Button
-          //       GestureDetector(
-          //         onTap: () {
-          //           if (currentIndex == onboardingPages.length - 1) {
-          //             // Handle last page action (e.g., navigate to main app)
-          //           } else {
-          //             // Move to next page
-          //             pageController.nextPage(
-          //               duration: const Duration(milliseconds: 300),
-          //               curve: Curves.easeInOut,
-          //             );
-          //           }
-          //         },
-          //         child: Container(
-          //           padding: const EdgeInsets.all(7),
-          //           decoration: BoxDecoration(
-          //             shape: BoxShape.circle,
-          //             color: currentIndex == onboardingPages.length - 1
-          //                 ? Appcolors.ksecondarycolor
-          //                 : Appcolors.kprimarycolor,
-          //           ),
-          //           child: Icon(
-          //             currentIndex == onboardingPages.length - 1
-          //                 ? Icons.check
-          //                 : Icons.arrow_forward,
-          //             color: Colors.white,
-          //             size: 24,
-          //             weight: 10,
-          //           ),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
+   
           ResponsiveSizedBox.height50,
         ],
       ),

@@ -11,6 +11,7 @@ import 'package:qcms/widgets/custom_loginbutton.dart';
 import 'package:qcms/widgets/custom_routes.dart';
 import 'package:qcms/widgets/custom_snackbar.dart';
 import 'package:qcms/widgets/custom_textfield.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ScreenLoginpage extends StatefulWidget {
   const ScreenLoginpage({super.key});
@@ -105,11 +106,12 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
               BlocConsumer<SendOtpBloc, SendOtpState>(
                 listener: (context, state) {
                   if (state is SendOtpSuccess) {
-                      CustomSnackbar.show(
-                                  context,
-                                  message: "OTP has been sent on your Mobile Number ${_mobileController.text}.",
-                                  type: SnackbarType.success,
-                                );
+                    CustomSnackbar.show(
+                      context,
+                      message:
+                          "OTP has been sent on your Mobile Number ${_mobileController.text}.",
+                      type: SnackbarType.success,
+                    );
                     CustomNavigation.pushReplacementNamedWithTransition(
                       context,
                       AppRouter.verifyOTP,
@@ -138,13 +140,12 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
                             mobileNumber: _mobileController.text,
                           ),
                         );
-                      }
-                      else{
-                          CustomSnackbar.show(
-    context,
-    message: 'Please fill all required fields',
-    type: SnackbarType.error,
-  );
+                      } else {
+                        CustomSnackbar.show(
+                          context,
+                          message: 'Please fill all required fields',
+                          type: SnackbarType.error,
+                        );
                       }
                     },
                     text: 'Login',
@@ -206,7 +207,9 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        _launchPrivacyPolicy();
+                      },
                       icon: Icon(
                         Icons.privacy_tip_outlined,
                         size: 16,
@@ -223,7 +226,12 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
                       color: Appcolors.kprimarycolor.withOpacity(.4),
                     ),
                     TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        CustomNavigation.pushNamedWithTransition(
+                          context,
+                          AppRouter.disclaimer,
+                        );
+                      },
                       icon: Icon(
                         Icons.info_outline,
                         size: 16,
@@ -244,6 +252,13 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
         ),
       ),
     );
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    final Uri url = Uri.parse('https://qcomplaints.com/privacy-policy');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   Widget _buildFeatureCard({

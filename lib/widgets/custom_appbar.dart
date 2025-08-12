@@ -3,6 +3,7 @@ import 'package:qcms/core/appconstants.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
 import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/widgets/custom_routes.dart';
 
 // Custom AppBar Component that can be reused
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -13,13 +14,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onNotificationPressed;
 
   const CustomAppBar({
-    Key? key,
+    super.key,
     required this.title,
     this.backgroundColor = Appcolors.ksecondarycolor,
     this.iconColor = Colors.white,
     this.onMenuPressed,
     this.onNotificationPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -69,10 +70,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               // Notification Icon
-              Icon(
-                Icons.notifications_outlined,
-                color: iconColor,
-                size: ResponsiveUtils.wp(6),
+              GestureDetector(
+                onTap: (){
+                  CustomNavigation.pushNamedWithTransition(context, AppRouter.notification);
+                },
+                child: Icon(
+                  Icons.notifications_outlined,
+                  color: iconColor,
+                  size: ResponsiveUtils.wp(6),
+                ),
               ),
             ],
           ),

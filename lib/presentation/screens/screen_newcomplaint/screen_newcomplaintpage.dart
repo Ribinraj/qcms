@@ -95,6 +95,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
 import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/data/complaint_categorymodel.dart';
 import 'package:qcms/data/complaintrequest_model.dart';
 import 'package:qcms/presentation/blocs/fetch_complaint_categories/fetch_complaint_categories_bloc.dart';
 
@@ -123,6 +124,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
   DateTime? selectedDateTime;
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
+  //String? imagerequired;
 
   // final List<String> departments = ['mysore', 'calicut', 'cochin'];
   // final List<String> complaintCategories = ['Roof', 'Floor', 'Wall'];
@@ -442,7 +444,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      TextStyles.body(text: 'Upload Image (Optional)'),
+                      TextStyles.body(text: 'Upload Image'),
                     ],
                   ),
                   ResponsiveSizedBox.height20,
@@ -479,20 +481,18 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                 }
                 return Customloginbutton(
                   onPressed: () async {
-                    // // Handle form submission
-                    // print('Department: $selectedDepartment');
-                    // print('Category: $selectedComplaintCategory');
-                    // print('DateTime: $selectedDateTime');
-                    // print('Remarks: ${remarksController.text}');
-                    // print('Image: ${_selectedImage?.path}');
+                    if (!_validateForm()) {
+                      return;
+                    }
                     String? base64Image;
                     if (_selectedImage != null) {
                       final bytes = await File(
                         _selectedImage!.path,
                       ).readAsBytes();
                       base64Image = base64Encode(bytes);
-                      print('Base64 Image: $base64Image');
+                    
                     } else {
+                       base64Image = null; 
                       print('No image selected');
                     }
                     context.read<RequestComplaintBloc>().add(
@@ -501,7 +501,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                           departmentId: int.parse(selectedDepartment!.id),
                           categoryId: int.parse(selectedComplaintCategory!.id),
                           complaintRemarks: remarksController.text,
-                          picture: base64Image!,
+                          picture: base64Image,
                         ),
                       ),
                     );
@@ -516,6 +516,66 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
         ),
       ),
     );
+  }
+
+  bool _validateForm() {
+    // Check if department is selected
+    if (selectedDepartment == null) {
+      CustomSnackbar.show(
+        context,
+        message: 'Please select a department',
+        type: SnackbarType.error,
+      );
+      return false;
+    }
+
+    // Check if complaint category is selected
+    if (selectedComplaintCategory == null) {
+      CustomSnackbar.show(
+        context,
+        message: 'Please select a complaint category',
+        type: SnackbarType.error,
+      );
+      return false;
+    }
+
+    // Check if image is required and validate
+    if (_isImageRequired() && _selectedImage == null) {
+      CustomSnackbar.show(
+        context,
+        message: 'Image is required for this complaint category',
+        type: SnackbarType.error,
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  bool _isImageRequired() {
+    if (selectedComplaintCategory == null) return false;
+
+    // Find the selected complaint category from the state
+    final complaintCategoriesState = context
+        .read<FetchComplaintCategoriesBloc>()
+        .state;
+
+    if (complaintCategoriesState is FetchComplaintCategoriesSuccessState) {
+      final selectedCategory = complaintCategoriesState.complaints.firstWhere(
+        (category) => category.categoryId == selectedComplaintCategory!.id,
+        orElse: () => ComplaintCategorymodel(
+          categoryId: '',
+          departmentId: '',
+          categoryName: '',
+          pictureRequired: 'NO',
+          otpAuthentication: '',
+        ),
+      );
+
+      return selectedCategory.pictureRequired.toUpperCase() == 'YES';
+    }
+
+    return false;
   }
 
   Future<void> _showImageSourceDialog() async {
