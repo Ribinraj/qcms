@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -11,6 +12,7 @@ import 'package:qcms/presentation/blocs/fetch_complaintlists_bloc/fetch_complain
 import 'package:qcms/widgets/custom_appbar.dart';
 import 'package:qcms/widgets/custom_routes.dart';
 import 'package:qcms/widgets/custom_snackbar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ScreenComplaintdetailsPage extends StatefulWidget {
   final ComplaintListmodel complaintdetails;
@@ -33,22 +35,21 @@ class _ScreenComplaintdetailsPageState
 
   @override
   Widget build(BuildContext context) {
-   // final complaint = widget.complaintdetails;
+    // final complaint = widget.complaintdetails;
     return BlocBuilder<FetchComplaintlistsBloc, FetchComplaintlistsState>(
       builder: (context, state) {
-             ComplaintListmodel complaint = widget.complaintdetails;
-        
+        ComplaintListmodel complaint = widget.complaintdetails;
+
         if (state is FetchComplaintlistSuccessState) {
-          final updatedComplaint = state.complaints
-              .firstWhere(
-                (c) => c.complaintId == widget.complaintdetails.complaintId,
-                orElse: () => widget.complaintdetails,
-              );
+          final updatedComplaint = state.complaints.firstWhere(
+            (c) => c.complaintId == widget.complaintdetails.complaintId,
+            orElse: () => widget.complaintdetails,
+          );
           complaint = updatedComplaint;
         }
 
         return Scaffold(
-          appBar: CustomAppBar(title: 'Complaint Details'),
+          appBar: CustomAppBar(title: "complaintdetails title".tr()),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -79,8 +80,8 @@ class _ScreenComplaintdetailsPageState
                       _buildDetailRow('Flat#', complaint.flatId),
                       _buildDivider(),
                       _buildDetailRow(
-                        'Remarks',
-                        complaint.remark,
+                        'Complaint Remarks',
+                        complaint.complaintRemarks,
                         showEmpty: true,
                       ),
                       _buildDivider(),
@@ -103,7 +104,7 @@ class _ScreenComplaintdetailsPageState
                           ),
                         ),
                       ),
-                      complaint.complaintStatus != "CANCELLED"
+                      complaint.complaintStatus == "WIP"
                           ? Column(
                               children: [
                                 _buildDivider(),
@@ -112,15 +113,26 @@ class _ScreenComplaintdetailsPageState
                                   complaint.workerName,
                                 ),
                                 _buildDivider(),
-                                _buildDetailRow(
-                                  'Artisan Mobile',
-                                  complaint.workerMobile,
+                                GestureDetector(
+                                  onTap: () =>
+                                      _launchPhone(complaint.workerMobile),
+                                  child: _buildDetailRow(
+                                    'Artisan Mobile',
+                                    complaint.workerMobile,
+                                  ),
                                 ),
                                 _buildDivider(),
                                 _buildDetailRow(
                                   'Verify OTP',
                                   complaint.complaintOTP,
                                 ),
+                                _buildDivider(),
+                                _buildDetailRow(
+                                  'Artisan Visitdate',
+                                  _formatDateTime(complaint.artisansVisitDate),
+                                ),
+                                _buildDivider(),
+                                _buildDetailRow('Remark', complaint.remarks),
                               ],
                             )
                           : SizedBox.shrink(),
@@ -146,15 +158,15 @@ class _ScreenComplaintdetailsPageState
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.arrow_back, size: 20),
                                 SizedBox(width: 8),
                                 Text(
-                                  'Go Back',
+                                  "complaintdetails goback".tr(),
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: ResponsiveUtils.wp(3),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -166,12 +178,12 @@ class _ScreenComplaintdetailsPageState
                             child: BlocConsumer<CancelComplaintBloc, CancelComplaintState>(
                               listener: (context, state) {
                                 if (state is CancelComplaintSuccessState) {
-                                             context.read<FetchComplaintlistsBloc>().add(
-                        UpdateComplaintStatusEvent(
-                          complaintId: complaint.complaintId,
-                          newStatus: "CANCELLED",
-                        ),
-                      );
+                                  context.read<FetchComplaintlistsBloc>().add(
+                                    UpdateComplaintStatusEvent(
+                                      complaintId: complaint.complaintId,
+                                      newStatus: "CANCELLED",
+                                    ),
+                                  );
                                   CustomSnackbar.show(
                                     context,
                                     message: state.message,
@@ -227,13 +239,18 @@ class _ScreenComplaintdetailsPageState
                                             children: [
                                               Icon(
                                                 Icons.warning_amber_rounded,
+                                                size: ResponsiveUtils.wp(3),
                                                 color: Appcolors.kprimarycolor,
                                               ),
-                                              const SizedBox(width: 8),
+                                              ResponsiveSizedBox.width20,
                                               Text(
-                                                'Cancel Complaint',
+                                                "complaintdetails cancelcomplaint"
+                                                    .tr(),
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
+                                                  fontSize: ResponsiveUtils.wp(
+                                                    3,
+                                                  ),
                                                   color:
                                                       Appcolors.kprimarycolor,
                                                 ),
@@ -283,7 +300,7 @@ class _ScreenComplaintdetailsPageState
                                                             .complaintId,
                                                       ),
                                                     );
-                                                      Navigator.of(context).pop();
+                                                Navigator.of(context).pop();
                                               },
                                               child: const Text('Yes'),
                                             ),
@@ -402,6 +419,27 @@ class _ScreenComplaintdetailsPageState
         ],
       ),
     );
+  }
+
+  Future<void> _launchPhone(String phone) async {
+    try {
+      final Uri phoneUri = Uri(scheme: 'tel', path: phone);
+      if (await canLaunchUrl(phoneUri)) {
+        await launchUrl(phoneUri);
+      } else {
+        CustomSnackbar.show(
+          context,
+          message: 'Could not launch phone dialer',
+          type: SnackbarType.error,
+        );
+      }
+    } catch (e) {
+      CustomSnackbar.show(
+        context,
+        message: 'Error launching phone: $e',
+        type: SnackbarType.error,
+      );
+    }
   }
 
   Widget _buildDivider() {

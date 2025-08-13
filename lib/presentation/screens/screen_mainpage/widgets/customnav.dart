@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,9 +22,11 @@ class BottomNavigationWidget extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           backgroundColor: Appcolors.kprimarycolor,
           selectedItemColor: Appcolors.kwhitecolor,
-          unselectedItemColor: Appcolors.ksecondarycolor,
+          unselectedItemColor: const Color.fromARGB(255, 245, 146, 113),
           // selectedIconTheme: const IconThemeData(color: Appcolors.kblackcolor),
-          unselectedIconTheme: IconThemeData(color: Appcolors.ksecondarycolor),
+          unselectedIconTheme: IconThemeData(
+            color: const Color.fromARGB(255, 245, 146, 113),
+          ),
           selectedLabelStyle: const TextStyle(fontSize: 10),
           unselectedLabelStyle: const TextStyle(fontSize: 10),
           items: [
@@ -34,7 +37,7 @@ class BottomNavigationWidget extends StatelessWidget {
                 size: ResponsiveUtils.wp(7),
               ),
               icon: Icon(Icons.home_outlined, size: ResponsiveUtils.wp(7)),
-              label: 'Dashboard',
+              label: "bottombar dashboard".tr(),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.add, size: ResponsiveUtils.wp(7)),
@@ -43,7 +46,7 @@ class BottomNavigationWidget extends StatelessWidget {
                 color: Appcolors.kwhitecolor,
                 size: ResponsiveUtils.wp(7),
               ),
-              label: 'New',
+              label: "bottombar new".tr(),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.list_rounded, size: ResponsiveUtils.wp(7)),
@@ -52,7 +55,7 @@ class BottomNavigationWidget extends StatelessWidget {
                 color: Appcolors.kwhitecolor,
                 size: ResponsiveUtils.wp(7),
               ),
-              label: 'My Complaints',
+              label: "bottombar mycomplaints".tr(),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_2_outlined, size: ResponsiveUtils.wp(7)),
@@ -61,7 +64,7 @@ class BottomNavigationWidget extends StatelessWidget {
                 color: Appcolors.kwhitecolor,
                 size: ResponsiveUtils.wp(7),
               ),
-              label: 'Profile',
+              label: "bottombar profile".tr(),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings_outlined, size: ResponsiveUtils.wp(7)),
@@ -70,7 +73,7 @@ class BottomNavigationWidget extends StatelessWidget {
                 color: Appcolors.kwhitecolor,
                 size: ResponsiveUtils.wp(7),
               ),
-              label: 'Profile',
+              label: "bottombar settings".tr(),
             ),
           ],
         );

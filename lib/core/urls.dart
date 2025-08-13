@@ -14,4 +14,5 @@ class Endpoints {
   static const fetchdepartments = 'consumer/masters/departments';
   static const fetchcomplaintcategories = 'consumer/masters/categories';
   static const requestComplaint = 'consumer/complaints/create';
+  static const settoken = 'consumer/login/settoken';
 }

@@ -290,124 +290,29 @@ class LoginRepo {
       );
     }
   }
-// ///////////////////////updateprofile///////////////////////
 
-//   Future<ApiResponse> updateprofile({required String username, required String emailadress}) async {
-//     try {
-//       final token = await getUserToken();
-  
-//       Response response = await dio.post(
-//         Endpoints.updateprofile,
-//         options: Options(headers: {'Authorization': token}),
-//         data: { "customerFullName": username,
-//     "customerEmailAddress":emailadress}
-//       );
-  
-//       final responseData = response.data;
-
-//       if (!responseData["error"] && responseData["status"] == 200) {
-       
-     
-    
-
-//         return ApiResponse(
-//           data: null,
-//           message: responseData['message'] ?? 'Success',
-//           error: false,
-//           status: responseData["status"],
-//         );
-//       } else {
-//         return ApiResponse(
-//           data: null,
-//           message: responseData['message'] ?? 'Something went wrong',
-//           error: true,
-//           status: responseData["status"],
-//         );
-//       }
-//     } on DioException catch (e) {
-//       debugPrint(e.message);
-//       log(e.toString());
-//       return ApiResponse(
-//         data: null,
-//         message: 'Network or server error occurred',
-//         error: true,
-//         status: 500,
-//       );
-//     } catch (e) {
-//       // Add a general catch block for other exceptions
-//       log("Unexpected error: $e");
-//       return ApiResponse(
-//         data: null,
-//         message: 'Unexpected error: $e',
-//         error: true,
-//         status: 500,
-//       );
-//     }
-//   }
 //   ///////////////update token/////////////////
-// Future<void> updatetoken({required String token}) async {
-//   try {
-//     final userToken = await getUserToken();
+Future<void> updatetoken({required String token}) async {
+  try {
+    final userToken = await getUserToken();
     
-//     Response response = await dio.post(
-//       Endpoints.updatetoken, 
-//       options: Options(headers: {'Authorization': userToken}),
-//       data: {"pushToken": token}
-//     );
+    Response response = await dio.post(
+      Endpoints.settoken, 
+      options: Options(headers: {'Authorization': userToken}),
+      data: { "pushToken": token}
+    );
     
-//     final responseData = response.data;
-//     if (!responseData["error"] && responseData["status"] == 200) {
-//       log("FCM token updated successfully");
-//     } else {
-//       log("Failed to update FCM token: ${responseData["message"]}");
-//     }
-//   } catch (e) {
-//     log("Error updating FCM token: $e");
-//   }
-// }
-// ////////////--------------sendlogin-------------/////////////
-// Future<ApiResponse> loginwithemail(
-//       {required String email,required String password}) async {
-//     try {
-//       // final token = await getUserToken();
-//       Response response = await dio.post(Endpoints.loginwithemail,
-//           data:{
-//     "customerEmailAddress":email,
-//     "customerPassword": password
-// });
+    final responseData = response.data;
+    if (!responseData["error"] && responseData["status"] == 200) {
+      log("FCM token updated successfully");
+    } else {
+      log("Failed to update FCM token: ${responseData["message"]}");
+    }
+  } catch (e) {
+    log("Error updating FCM token: $e");
+  }
+}
 
-//       final responseData = response.data;
-//       log("Response data: $responseData");
-//       if (!responseData["error"] && responseData["status"] == 200) {
-
-//         SharedPreferences preferences = await SharedPreferences.getInstance();
-
-//         preferences.setString('USER_TOKEN', responseData["data"]["token"]);
-//         return ApiResponse(
-//           data: null,
-//           message: responseData['messages'] ?? 'Success',
-//           error: false,
-//           status: responseData["status"],
-//         );
-//       } else {
-//         return ApiResponse(
-//           data: null,
-//           message: responseData['messages'] ?? 'Something went wrong',
-//           error: true,
-//           status: responseData["status"],
-//         );
-//       }
-//     } on DioException catch (e) {
-//       debugPrint(e.message);
-//       log(e.toString());
-//       return ApiResponse(
-//         data: null,
-//         message: 'Network or server error occurred',
-//         error: true,
-//         status: 500,
-//       );
-//     }
-//   }
 
   void dispose() {
     dio.close();

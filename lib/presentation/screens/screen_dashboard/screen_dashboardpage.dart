@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
+
 import 'package:qcms/presentation/blocs/fetch_dashboard_bloc/fetch_dashboard_bloc.dart';
 import 'package:qcms/widgets/custom_appbar.dart';
 import 'package:qcms/widgets/custom_routes.dart';
@@ -26,7 +28,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // appBar: const CustomAppBar(title: 'Dashboard'),
-       appBar: CustomAppBar(title: "title".tr()),
+       appBar: CustomAppBar(title: "dashboard title".tr()),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -42,8 +44,8 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      //'Indian Railways',
-                      "title".tr(),
+                      "dashboard indianrailways".tr(),
+                     
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
@@ -54,7 +56,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                     ResponsiveSizedBox.height10,
 
                     Text(
-                      'Quarters Complaint Management System',
+                     "dashboard subheading".tr(),
                       style: TextStyle(
                         fontSize: 15,
                         color: const Color.fromARGB(255, 255, 255, 255),
@@ -63,7 +65,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                     ),
                     ResponsiveSizedBox.height5,
                     Text(
-                      'Designed & Developed by Crisant technologies',
+                      "dashboard crisant".tr(),
                       style: TextStyle(
                         fontSize: 10,
                         color: const Color.fromARGB(255, 231, 142, 40),
@@ -89,30 +91,10 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                     mainAxisSpacing: 16,
                     childAspectRatio: 1.1,
                     children: [
-                      _buildStatCard(
-                        title: 'Total Complaints',
-                        value: '...',
-
-                        color: Appcolors.ksecondarycolor,
-                      ),
-                      _buildStatCard(
-                        title: 'Open Complaints',
-                        value: '...',
-
-                        color: Appcolors.ksecondarycolor,
-                      ),
-                      _buildStatCard(
-                        title: 'Assigned Complaints',
-                        value: '...',
-
-                        color: Appcolors.ksecondarycolor,
-                      ),
-                      _buildStatCard(
-                        title: 'Resolved Complaints',
-                        value: '...',
-
-                        color: Appcolors.ksecondarycolor,
-                      ),
+                   _buildStatLoadingCard(),
+                   _buildStatLoadingCard(),
+                    _buildStatLoadingCard(),
+         _buildStatLoadingCard(),
                     ],
                   );
                 } else if (state is FetchDashboardErrorState) {
@@ -127,25 +109,25 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                     childAspectRatio: 1.1,
                     children: [
                       _buildStatCard(
-                        title: 'Total Complaints',
+                        title: "dashboard totalcomplaints".tr(),
                         value: state.dashboard.totalComplaints,
 
                         color: Appcolors.ksecondarycolor,
                       ),
                       _buildStatCard(
-                        title: 'Open Complaints',
+                        title: "dashboard opencomplaints".tr(),
                         value: state.dashboard.openComplaints,
 
                         color: Appcolors.ksecondarycolor,
                       ),
                       _buildStatCard(
-                        title: 'Assigned Complaints',
+                        title: "dashboard assignedcomplaints".tr(),
                         value: state.dashboard.wipComplaints,
 
                         color: Appcolors.ksecondarycolor,
                       ),
                       _buildStatCard(
-                        title: 'Resolved Complaints',
+                        title:"dashboard resolvedcomplaints".tr(),
                         value: state.dashboard.completedComplaints,
 
                         color: Appcolors.ksecondarycolor,
@@ -165,7 +147,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
               children: [
                 Expanded(
                   child: _buildActionButton(
-                    title: 'New Complaint',
+                    title: "dashboard newcomplaints".tr(),
                     icon: Icons.add,
                     onPressed: () {
                       navigateToMainPageNamed(context, 1);
@@ -176,7 +158,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildActionButton(
-                    title: 'View Complaints',
+                    title: "dashboard viewcomplaints".tr(),
                     icon: Icons.visibility,
                     onPressed: () {
                       navigateToMainPageNamed(context, 2);
@@ -237,7 +219,15 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage> {
       ),
     );
   }
-
+  Widget _buildStatLoadingCard() {
+    return CustomPaint(
+      painter: EnhancedCardPainter(color:Appcolors.ksecondarycolor, radius: 10),
+      child:Container(
+      
+        child: Center(child: SpinKitCircle(size: 15,color: Appcolors.kwhitecolor,),)),
+    
+    );
+  }
   Widget _buildActionButton({
     required String title,
     required IconData icon,

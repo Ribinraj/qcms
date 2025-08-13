@@ -1,5 +1,17 @@
 {
-  "title": "ನಮಸ್ಕಾರ",
-  "greeting": "ಅಪ್ಲಿಕೇಶನ್‌ಗೆ ಸ್ವಾಗತ",
-  "change_language": "ಭಾಷೆ ಬದಲಾಯಿಸಿ"
+    "bottombar dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    "bottombar new": "ಹೊಸದು",
+    "bottombar mycomplaints": "ನನ್ನ ದೂರುಗಳು",
+    "bottombar profile": "ಪ್ರೊಫೈಲ್",
+    "bottombar settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+    "dashboard title": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    "dashboard indianrailways": "ಭಾರತೀಯ ರೈಲ್ವೆ",
+    "dashboard subheading": "ಕ್ವಾರ್ಟರ್‌ಗಳ ದೂರು ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ",
+    "dashboard crisant": "ಕ್ರಿಸಾಂಟ್ ತಂತ್ರಜ್ಞಾನಗಳಿಂದ ವಿನ್ಯಾಸಗೊಳಿಸಿ ಅಭಿವೃದ್ಧಿಪಡಿಸಲಾಗಿದೆ",
+    "dashboard totalcomplaints": "ಒಟ್ಟು ದೂರುಗಳು",
+    "dashboard opencomplaints": "ತೆರೆದ ದೂರುಗಳು",
+    "dashboard assignedcomplaints": "ಹಂಚಿದ ದೂರುಗಳು",
+    "dashboard resolvedcomplaints": "ಪರಿಹರಿಸಿದ ದೂರುಗಳು",
+    "dashboard newcomplaints": "ಹೊಸ ದೂರುಗಳು",
+    "dashboard viewcomplaints": "ದುರುಗಳನ್ನು ವೀಕ್ಷಿಸಿ"
 }

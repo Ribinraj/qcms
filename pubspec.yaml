@@ -43,6 +43,9 @@ dependencies:
   dio: ^5.9.0
   url_launcher: ^6.3.2
   easy_localization: ^3.0.8
+  firebase_messaging: ^16.0.0
+  firebase_core: ^4.0.0
+  flutter_local_notifications: ^19.4.0
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,17 @@
 {
-  "title": "नमस्ते",
-  "greeting": "ऐप में आपका स्वागत है",
-  "change_language": "भाषा बदलें"
+    "bottombar dashboard": "डैशबोर्ड",
+    "bottombar new": "नया",
+    "bottombar mycomplaints": "मेरी शिकायतें",
+    "bottombar profile": "प्रोफ़ाइल",
+    "bottombar settings": "सेटिंग्स",
+    "dashboard title": "डैशबोर्ड",
+    "dashboard indianrailways": "भारतीय रेल",
+    "dashboard subheading": "क्वार्टर शिकायत प्रबंधन प्रणाली",
+    "dashboard crisant": "क्रिसेंट टेक्नोलॉजीज द्वारा डिज़ाइन और विकसित",
+    "dashboard totalcomplaints": "कुल शिकायतें",
+    "dashboard opencomplaints": "खुली शिकायतें",
+    "dashboard assignedcomplaints": "सौंपे गए शिकायतें",
+    "dashboard resolvedcomplaints": "सुलझी शिकायतें",
+    "dashboard newcomplaints": "नई शिकायतें",
+    "dashboard viewcomplaints": "शिकायतें देखें"
 }

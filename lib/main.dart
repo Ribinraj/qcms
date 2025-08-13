@@ -151,13 +151,18 @@
 // //   );
 // // }
 /////////////////////////
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/domain/controllers/pushnotification_controller.dart';
 import 'package:qcms/domain/repositories/apprepo.dart';
 import 'package:qcms/domain/repositories/loginrepo.dart';
 import 'package:qcms/presentation/blocs/cancel_complaint_bloc/cancel_complaint_bloc.dart';
@@ -182,7 +187,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+    final pushNotifications = PushNotifications();
+  await pushNotifications.init();
+  if (Platform.isIOS) {
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+      provisional: false,
+    );
+  }
     final prefs = await SharedPreferences.getInstance();
   final langCode = prefs.getString('langCode') ?? 'en';
   SystemChrome.setSystemUIOverlayStyle(
@@ -192,7 +209,10 @@ void main() async {
       statusBarBrightness: Brightness.light,
     ),
   );
-
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(
     EasyLocalization(
       supportedLocales: const [

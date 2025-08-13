@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -24,7 +25,9 @@ class _ScreenComplaintdetailsPageState extends State<Screenprofilepage> {
     context.read<FetchProfileBloc>().add(FetchProfileInitialEvent());
   }
 
-  String _formatDateTime(DateTime dateTime) {
+  String _formatDateTime(String? dateTimeString) {
+    if (dateTimeString == null || dateTimeString.isEmpty) return 'N/A';
+    final DateTime dateTime = DateTime.parse(dateTimeString);
     final DateFormat dateFormat = DateFormat('MMM dd, yyyy');
     final DateFormat timeFormat = DateFormat('hh:mm a');
     return '${dateFormat.format(dateTime)} at ${timeFormat.format(dateTime)}';
@@ -33,7 +36,7 @@ class _ScreenComplaintdetailsPageState extends State<Screenprofilepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'My Profile'),
+      appBar: CustomAppBar(title: "profile title".tr()),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -94,7 +97,7 @@ class _ScreenComplaintdetailsPageState extends State<Screenprofilepage> {
                         _buildDetailRow('Quarters Status', user.quartersStatus),
 
                         _buildDivider(),
-                        _buildDetailRow('Last Updated', user.lastModified),
+                        _buildDetailRow('Last Updated', _formatDateTime(user.lastModified)),
                         _buildDivider(),
                       ],
                     ),

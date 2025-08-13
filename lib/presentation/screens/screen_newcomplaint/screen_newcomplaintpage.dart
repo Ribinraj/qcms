@@ -88,6 +88,7 @@
 ////////////////////////////////////////////
 import 'dart:convert';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -106,6 +107,7 @@ import 'package:qcms/widgets/custom_datepicker.dart';
 import 'package:qcms/widgets/custom_login_loadingbutton.dart';
 
 import 'package:qcms/widgets/custom_loginbutton.dart';
+import 'package:qcms/widgets/custom_routes.dart';
 import 'package:qcms/widgets/custom_searchdropdown.dart';
 import 'package:qcms/widgets/custom_snackbar.dart';
 import 'package:qcms/widgets/custom_textfield.dart';
@@ -143,7 +145,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-      appBar: CustomAppBar(title: 'New Complaint'),
+      appBar: CustomAppBar(title: "newcomplaint title".tr()),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -170,14 +172,16 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: TextStyles.headline(text: 'Register your flat'),
+                        child: TextStyles.headline(
+                          text: "newcomplaint registernewcomplaint".tr(),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   TextStyles.body(
                     text:
-                        'If your division and quarters are listed but your flat is missing, please register your flat here',
+                      "newcomplaint subheading".tr(),
                   ),
                 ],
               ),
@@ -199,7 +203,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      TextStyles.body(text: 'Department*'),
+                      TextStyles.body(text: "newcomplaint department".tr()),
                     ],
                   ),
                   ResponsiveSizedBox.height5,
@@ -259,10 +263,10 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
 
                         return CustomSearchDropdown(
                           value: selectedDepartment,
-                          hintText: 'Please select department',
+                          hintText: "Please select department",
                           items: departmentItems,
                           enableSearch: true,
-                          searchHintText: 'Search departments...',
+                          searchHintText:"Search departments...",
                           onChanged: (value) {
                             setState(() {
                               selectedDepartment = value;
@@ -292,7 +296,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      TextStyles.body(text: 'Complaint Category*'),
+                      TextStyles.body(text: "newcomplaint complaintcategory".tr()),
                     ],
                   ),
                   ResponsiveSizedBox.height5,
@@ -356,10 +360,10 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
 
                         return CustomSearchDropdown(
                           value: selectedComplaintCategory,
-                          hintText: 'Please select Category',
+                          hintText: "Please select Category",
                           items: complaintCategories,
                           enableSearch: true,
-                          searchHintText: 'Search categories...',
+                          searchHintText:"Search categories...",
                           onChanged: (value) {
                             setState(() {
                               selectedComplaintCategory = value;
@@ -389,7 +393,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextStyles.body(
-                          text: 'Preferred Date & Time for Artisan\'s visit',
+                          text: "newcomplaint prefereddateandtime artisanvisit".tr(),
                         ),
                       ),
                     ],
@@ -417,13 +421,13 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      TextStyles.body(text: 'Remarks (Optional)'),
+                      TextStyles.body(text: "newcomplaint remarks".tr()),
                     ],
                   ),
                   ResponsiveSizedBox.height5,
                   CustomTextField(
                     controller: remarksController,
-                    hintText: 'Enter your remarks',
+                    hintText: "Enter your remarks",
                   ),
                 ],
               ),
@@ -444,7 +448,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      TextStyles.body(text: 'Upload Image'),
+                      TextStyles.body(text: "newcomplaint uploadimage".tr()),
                     ],
                   ),
                   ResponsiveSizedBox.height20,
@@ -467,6 +471,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                     message: state.message,
                     type: SnackbarType.success,
                   );
+                  navigateToMainPageNamed(context, 2);
                 } else if (state is RequestComplaintErrorState) {
                   CustomSnackbar.show(
                     context,
@@ -490,9 +495,8 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                         _selectedImage!.path,
                       ).readAsBytes();
                       base64Image = base64Encode(bytes);
-                    
                     } else {
-                       base64Image = null; 
+                      base64Image = null;
                       print('No image selected');
                     }
                     context.read<RequestComplaintBloc>().add(
@@ -506,7 +510,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                       ),
                     );
                   },
-                  text: 'Submit Complaint',
+                  text: "newcomplaint submitbutton".tr(),
                 );
               },
             ),

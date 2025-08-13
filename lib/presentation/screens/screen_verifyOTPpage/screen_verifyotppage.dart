@@ -9,6 +9,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
 import 'package:qcms/core/responsiveutils.dart';
+import 'package:qcms/domain/controllers/pushnotification_controller.dart';
 import 'package:qcms/presentation/blocs/resend_otp_bloc/resend_otp_bloc.dart';
 import 'package:qcms/presentation/blocs/verify_otp_bloc/verify_otp_bloc.dart';
 import 'package:qcms/widgets/custom_routes.dart';
@@ -210,8 +211,9 @@ class _ScreenVerifyOtpState extends State<ScreenVerifyOtp> {
 
   Widget _buildVerifyButton() {
     return BlocConsumer<VerifyOtpBloc, VerifyOtpState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is VerifyOtpSuccessState) {
+          await PushNotifications().sendTokenToServer();
           CustomNavigation.pushReplacementNamedWithTransition(
             context,
             AppRouter.mainpage,
