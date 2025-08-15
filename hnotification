@@ -1,0 +1,72 @@
+[33mcommit e659c2fc7fd46bedcf2c235ac037b3d2b8877062[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Merge: 88faceb 368a318
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Thu Aug 14 15:10:36 2025 +0530
+
+    Merge branch 'main' of https://github.com/Ribinraj/qcms
+
+[33mcommit 88faceb2ef0156296acc6ac51ef6cd61fbd9dfa5[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Thu Aug 14 15:10:28 2025 +0530
+
+    before pull
+
+[33mcommit 368a318a34526e7c5500664d002bc2dee1a247f8[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: mohammedakbark <makbarkozhikkal@gmail.com>
+Date:   Thu Aug 14 13:43:28 2025 +0530
+
+    firebase configured
+
+[33mcommit 779c777841227c2c648b76dcf16e88d1585a242c[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Wed Aug 13 17:19:53 2025 +0530
+
+    before creating pushnotification
+
+[33mcommit e8b25c1ce537b36b20e056df24d9edd91387de60[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Tue Aug 12 18:51:53 2025 +0530
+
+    language is completed
+
+[33mcommit 56e47987b49a8628c82ccd8e5fa283b5e5a228ee[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Mon Aug 11 18:52:16 2025 +0530
+
+    new complaints completed
+
+[33mcommit 2944932b060bf4bf2a3e9f44469e93e35bf8e524[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Sat Aug 9 18:39:46 2025 +0530
+
+    fetch profile completed
+
+[33mcommit 29324ab4a87286095a477b218b76fb2dae6a0182[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Fri Aug 8 18:42:11 2025 +0530
+
+    login completed
+
+[33mcommit ba339469338c85527b53151387fc0b8078171203[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Thu Aug 7 19:01:36 2025 +0530
+
+    ui completed except settings
+
+[33mcommit 2146e7ae8d2bc8bfa09cf47b09cf433b219df405[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Wed Aug 6 18:40:29 2025 +0530
+
+    dashboard completed
+
+[33mcommit 88f3263c5b7cb909210f6afa76fb9bf9faaff316[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Tue Aug 5 18:46:56 2025 +0530
+
+    second commit
+
+[33mcommit 29754c06d3098cd76406404cb7411d9567f12600[m
+Author: Ribinraj <ribinrajop@gmail.com>
+Date:   Tue Aug 5 18:43:41 2025 +0530
+
+    first commit
