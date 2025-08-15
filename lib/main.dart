@@ -191,6 +191,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
     final pushNotifications = PushNotifications();
   await pushNotifications.init();
   if (Platform.isIOS) {
