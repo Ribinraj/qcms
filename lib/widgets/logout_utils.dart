@@ -18,8 +18,9 @@ class AuthUtils {
 
       // Clear user token
       await prefs.remove('USER_TOKEN');
+      await prefs.remove('FCM_TOKEN');
       await PushNotifications().deleteDeviceToken();
-
+      navigateToMainPageNamed(context, 0);
       // Normal logout - go to login page
       if (context.mounted) {
         CustomNavigation.pushNamedAndRemoveUntil(context, AppRouter.login);

@@ -167,6 +167,7 @@ import 'package:qcms/domain/repositories/apprepo.dart';
 import 'package:qcms/domain/repositories/loginrepo.dart';
 import 'package:qcms/firebase_options.dart';
 import 'package:qcms/presentation/blocs/cancel_complaint_bloc/cancel_complaint_bloc.dart';
+import 'package:qcms/presentation/blocs/connectivity_bloc.dart/connectivity_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_complaint_categories/fetch_complaint_categories_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_complaintlists_bloc/fetch_complaintlists_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_departments_bloc/fetch_departments_bloc.dart';
@@ -222,11 +223,14 @@ void main() async {
         Locale('hi'),
         Locale('kn'),
       ],
-      path: 'assets/lang', // Path to JSON files
+      path: 'assets/lang',
       fallbackLocale: const Locale('en'),
       startLocale: Locale(langCode),
       child: MultiBlocProvider(
         providers: [
+              BlocProvider(
+          create: (context) => ConnectivityBloc(),
+        ),
           BlocProvider(create: (context) => BottomNavigationBloc()),
           BlocProvider(create: (context) => SendOtpBloc(repository: LoginRepo())),
           BlocProvider(create: (context) => VerifyOtpBloc(repository: LoginRepo())),

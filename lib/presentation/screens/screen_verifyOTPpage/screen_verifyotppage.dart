@@ -213,6 +213,8 @@ class _ScreenVerifyOtpState extends State<ScreenVerifyOtp> {
     return BlocConsumer<VerifyOtpBloc, VerifyOtpState>(
       listener: (context, state) async {
         if (state is VerifyOtpSuccessState) {
+           final pushNotifications = PushNotifications.instance;
+           await pushNotifications.init();
           await PushNotifications().sendTokenToServer();
           CustomNavigation.pushReplacementNamedWithTransition(
             context,
