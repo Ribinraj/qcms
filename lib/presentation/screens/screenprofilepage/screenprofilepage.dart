@@ -69,7 +69,7 @@ class _ScreenComplaintdetailsPageState extends State<Screenprofilepage> {
                     color: Appcolors.kwhitecolor,
                     child: Center(
                       child: SpinKitCircle(
-                        size: 45,
+                        size: 30,
                         color: Appcolors.ksecondarycolor,
                       ),
                     ),
@@ -97,7 +97,10 @@ class _ScreenComplaintdetailsPageState extends State<Screenprofilepage> {
                         _buildDetailRow('Quarters Status', user.quartersStatus),
 
                         _buildDivider(),
-                        _buildDetailRow('Last Updated', _formatDateTime(user.lastModified)),
+                        _buildDetailRow(
+                          'Last Updated',
+                          _formatDateTime(user.lastModified),
+                        ),
                         _buildDivider(),
                       ],
                     ),

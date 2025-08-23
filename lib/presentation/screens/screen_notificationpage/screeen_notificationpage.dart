@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:intl/intl.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
+import 'package:qcms/presentation/blocs/fetch_notifications/fetch_notifications_bloc.dart';
 import 'package:qcms/widgets/custom_routes.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -13,58 +16,147 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-  final List<NotificationItem> notifications = [
-    NotificationItem(
-      title: "Order Successfull",
-      message: "Your orer placed successfully !!",
-      time: DateTime.now().subtract(const Duration(minutes: 5)),
-      isRead: false,
-      type: NotificationType.message,
-    ),
-    NotificationItem(
-      title: "Payment successful",
-      message: "Your Payment will be completed",
-      time: DateTime.now().subtract(const Duration(hours: 2)),
-      isRead: true,
-      type: NotificationType.payment,
-    ),
-    NotificationItem(
-      title: "New update available",
-      message: "Version 2.0.1 is now available for download",
-      time: DateTime.now().subtract(const Duration(hours: 8)),
-      isRead: true,
-      type: NotificationType.update,
-    ),
-  ];
   @override
   void initState() {
     super.initState();
-    // context.read<FetchNotificationBloc>().add(FetchNotificationInitailEvent());
+    context.read<FetchNotificationsBloc>().add(
+      FetchNotificationsInitialEvent(),
+    );
+  }
+
+  Future<void> _onRefresh() async {
+    context.read<FetchNotificationsBloc>().add(
+      FetchNotificationsInitialEvent(),
+    );
+    
+    // Wait for the bloc to complete the request
+    await Future.delayed(const Duration(milliseconds: 1500));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.grey[100],
       appBar: AppBar(
+        backgroundColor: Appcolors.ksecondarycolor,
         leading: IconButton(
           onPressed: () {
             CustomNavigation.pop(context);
           },
-          icon: Icon(Icons.chevron_left, size: 30),
+          icon: Icon(
+            Icons.chevron_left,
+            size: 30,
+            color: Appcolors.kwhitecolor,
+          ),
         ),
         title: TextStyles.subheadline(
           text: 'Notifications',
-          color: Appcolors.kprimarycolor,
+          color: Appcolors.kwhitecolor,
         ),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          return notifications.isEmpty
-              ? _buildEmptyState()
-              : _buildNotificationCard(context, notifications[index]);
+      body: BlocBuilder<FetchNotificationsBloc, FetchNotificationsState>(
+        builder: (context, state) {
+          if (state is FetchNotificationsLoadingState) {
+            return Center(
+              child: SpinKitCircle(size: 30, color: Appcolors.ksecondarycolor),
+            );
+          } else if (state is FetchNotificationsSuccessState) {
+            // Check if notifications list is empty
+            if (state.notifications.isEmpty) {
+              return RefreshIndicator(
+                onRefresh: _onRefresh,
+                color: Appcolors.ksecondarycolor,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height - 
+                           AppBar().preferredSize.height - 
+                           MediaQuery.of(context).padding.top,
+                    child: _buildEmptyState(),
+                  ),
+                ),
+              );
+            }
+            
+            // Show notifications list with RefreshIndicator
+            return RefreshIndicator(
+              onRefresh: _onRefresh,
+              color: Appcolors.ksecondarycolor,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: state.notifications.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    margin: const EdgeInsets.only(
+                      right: 16,
+                      left: 16,
+                      top: 10,
+                    ),
+                    elevation: 0,
+                    color: Appcolors.kwhitecolor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(
+                        color: Colors.grey.withOpacity(0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      leading: const Icon(
+                        Icons.notifications_active_outlined,
+                        color: Appcolors.kprimarycolor,
+                        size: 24,
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 4),
+                          Text(
+                            state.notifications[index].notification,
+                            style: TextStyle(
+                              color: Appcolors.kprimarycolor,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _formatTime(
+                              DateTime.parse(
+                                state.notifications[index].createdAt.date,
+                              ),
+                            ),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          } else if (state is FetchNotificationsErrorState) {
+            return RefreshIndicator(
+              onRefresh: _onRefresh,
+              color: Appcolors.ksecondarycolor,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height - 
+                         AppBar().preferredSize.height - 
+                         MediaQuery.of(context).padding.top,
+                  child: Center(child: Text(state.message)),
+                ),
+              ),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
         },
       ),
     );
@@ -91,53 +183,10 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            "We'll notify you when something arrives",
+            "Pull down to refresh",
             style: TextStyle(color: Colors.grey[600]),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildNotificationCard(
-    BuildContext context,
-    NotificationItem notification,
-  ) {
-    return Card(
-      margin: const EdgeInsets.only(right: 16, left: 16, top: 10),
-      elevation: 0,
-      color: Appcolors.kwhitecolor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: const Icon(
-          Icons.notifications_active_outlined,
-          color: Appcolors.kprimarycolor,
-          size: 24,
-        ),
-        // title: TextStyles.body(
-        //   text: notification.title,
-        //   weight: notification.isRead ? FontWeight.normal : FontWeight.bold,
-        //   color: Appcolors.kblackColor,
-        // ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(
-              notification.message,
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _formatTime(notification.time),
-              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -158,22 +207,4 @@ class _NotificationPageState extends State<NotificationPage> {
       return 'Just now';
     }
   }
-}
-
-enum NotificationType { message, payment, update, social, reminder }
-
-class NotificationItem {
-  final String title;
-  final String message;
-  final DateTime time;
-  final bool isRead;
-  final NotificationType type;
-
-  NotificationItem({
-    required this.title,
-    required this.message,
-    required this.time,
-    required this.isRead,
-    required this.type,
-  });
 }

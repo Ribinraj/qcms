@@ -12,6 +12,7 @@ class LanguageCubit extends Cubit<void> {
     await prefs.setString('langCode', locale.languageCode);
 
     // Change app language
+    // ignore: use_build_context_synchronously
     await context.setLocale(locale);
   }
 }

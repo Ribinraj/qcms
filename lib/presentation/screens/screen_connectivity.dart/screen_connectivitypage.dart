@@ -86,12 +86,7 @@ class NoNetworkOverlay extends StatelessWidget {
                   ),
                 ),
               ),
-              // SizedBox(
-              //   height: 150,
-              //   child: Lottie.asset(
-              //     'assets/images/Animation - 1728979722770.json',
-              //   ),
-              // ),
+
               ResponsiveSizedBox.height30,
               TextStyles.headline(
                   text: 'Ooops!', color: Appcolors.kprimarycolor),

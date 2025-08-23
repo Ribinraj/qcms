@@ -1,24 +1,14 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qcms/core/colors.dart';
-import 'package:qcms/core/constants.dart';
-import 'package:qcms/domain/controllers/pushnotification_controller.dart';
-import 'package:qcms/presentation/blocs/language_cubit.dart';
-import 'package:qcms/widgets/custom_appbar.dart';
-import 'package:qcms/widgets/logout_utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-//////////////////////////
 // import 'package:easy_localization/easy_localization.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:qcms/core/colors.dart';
 // import 'package:qcms/core/constants.dart';
+
 // import 'package:qcms/presentation/blocs/language_cubit.dart';
 // import 'package:qcms/widgets/custom_appbar.dart';
-
 // import 'package:qcms/widgets/logout_utils.dart';
+
+
 
 // class ScreenSettingsPage extends StatefulWidget {
 //   const ScreenSettingsPage({super.key});
@@ -30,12 +20,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 // class _ScreenSettingsPageState extends State<ScreenSettingsPage> {
 //   String selectedLanguage = 'English';
 //   bool isLanguageExpanded = false;
+//   bool isPushNotificationsEnabled = true; // Add this state variable
 
 //   final Map<String, Map<String, String>> languages = {
 //     'English': {'code': 'en', 'display': 'English'},
 //     'Hindi': {'code': 'hi', 'display': 'हिन्दी'},
 //     'Kannada': {'code': 'kn', 'display': 'ಕನ್ನಡ'},
 //   };
+
+
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -80,7 +73,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //                   ),
 //                   const SizedBox(height: 8),
 //                   Text(
-//                      "settings subtitle".tr(),
+//                     "settings subtitle".tr(),
 //                     style: TextStyle(
 //                       fontSize: 16,
 //                       color: Appcolors.kwhitecolor.withAlpha(230),
@@ -93,7 +86,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //             const SizedBox(height: 32),
 
 //             // Settings Sections
-//             _buildSectionTitle( "settings general".tr()),
+//             _buildSectionTitle("settings general".tr()),
 //             const SizedBox(height: 16),
 
 //             // Language Setting Card
@@ -106,25 +99,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 //             ResponsiveSizedBox.height30,
 
-//             // Future Settings Placeholder
-//             _buildSettingCard(
-//               icon: Icons.notifications_outlined,
-//               title: "settings notifications".toString(),
-//               subtitle: 'Manage your notifications',
-//               trailing: Icon(
-//                 Icons.arrow_forward_ios,
-//                 size: 16,
-//                 color: Appcolors.kprimarycolor.withAlpha(153),
-//               ),
-//               onTap: () {
-//                 ScaffoldMessenger.of(
-//                   context,
-//                 ).showSnackBar(const SnackBar(content: Text('Coming Soon!')));
-//               },
-//             ),
+//             // // Push Notifications Setting Card
+//             // _buildSettingCard(
+//             //   icon: Icons.notifications_outlined,
+//             //   title: "settings notifications".tr(),
+//             //   subtitle: 'Receive push notifications',
+//             //   child: _buildNotificationToggle(),
+//             // ),
 
-//             ResponsiveSizedBox.height40,
-
+//             // ResponsiveSizedBox.height40,
 //             _buildSectionTitle("settings account".tr()),
 //             const SizedBox(height: 16),
 
@@ -142,8 +125,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 //                 ],
 //               ),
 //               child: ElevatedButton(
-//                 onPressed: () async {
-//                   await _showLogoutDialog();
+//                 onPressed: () {
+//                   _showLogoutDialog();
 //                 },
 //                 style: ElevatedButton.styleFrom(
 //                   backgroundColor: Appcolors.kredcolor,
@@ -160,7 +143,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //                     Icon(Icons.logout, size: 20),
 //                     const SizedBox(width: 8),
 //                     Text(
-//                        "settings logout".tr(),
+//                       "settings logout".tr(),
 //                       style: TextStyle(
 //                         fontSize: 16,
 //                         fontWeight: FontWeight.w600,
@@ -177,6 +160,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //       ),
 //     );
 //   }
+
 
 //   Widget _buildSectionTitle(String title) {
 //     return Text(
@@ -382,7 +366,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //     );
 //   }
 
-//   Future<void> _showLogoutDialog() async {
+//   Future<void> _showLogoutDialog() {
 //     return showDialog<void>(
 //       context: context,
 //       barrierDismissible: false,
@@ -428,7 +412,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 //               ),
 //               child: const Text('Logout'),
 //               onPressed: () async {
-//                 Navigator.of(context).pop();
 //                 await AuthUtils.handleLogout(context);
 //               },
 //             ),
@@ -438,7 +421,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 //     );
 //   }
 // }
-///////////////////////////////
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qcms/core/colors.dart';
+import 'package:qcms/core/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:qcms/presentation/blocs/language_cubit.dart';
+import 'package:qcms/widgets/custom_appbar.dart';
+import 'package:qcms/widgets/logout_utils.dart';
+
 class ScreenSettingsPage extends StatefulWidget {
   const ScreenSettingsPage({super.key});
 
@@ -449,7 +442,7 @@ class ScreenSettingsPage extends StatefulWidget {
 class _ScreenSettingsPageState extends State<ScreenSettingsPage> {
   String selectedLanguage = 'English';
   bool isLanguageExpanded = false;
-  bool isPushNotificationsEnabled = true; // Add this state variable
+  bool isPushNotificationsEnabled = true;
 
   final Map<String, Map<String, String>> languages = {
     'English': {'code': 'en', 'display': 'English'},
@@ -457,101 +450,39 @@ class _ScreenSettingsPageState extends State<ScreenSettingsPage> {
     'Kannada': {'code': 'kn', 'display': 'ಕನ್ನಡ'},
   };
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _loadNotificationPreference();
-  // }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadSavedLanguage();
+  }
 
-  // // Load notification preference from SharedPreferences
-  // Future<void> _loadNotificationPreference() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     isPushNotificationsEnabled = prefs.getBool('push_notifications_enabled') ?? true;
-  //   });
-  // }
-
-  // // Save notification preference to SharedPreferences
-  // Future<void> _saveNotificationPreference(bool enabled) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setBool('push_notifications_enabled', enabled);
-  // }
-
-  // // Handle notification toggle
-  // Future<void> _toggleNotifications(bool enabled) async {
-  //   setState(() {
-  //     isPushNotificationsEnabled = enabled;
-  //   });
-
-  //   await _saveNotificationPreference(enabled);
-
-  //   if (enabled) {
-  //     // Enable notifications
-  //     await _enableNotifications();
-  //   } else {
-  //     // Disable notifications
-  //     await _disableNotifications();
-  //   }
-  // }
-
-  // Future<void> _enableNotifications() async {
-  //   try {
-  //     final pushNotifications = PushNotifications.instance;
-
-  //     // Re-initialize notifications
-  //     await pushNotifications.init();
-
-  //     // Send token to server if user is logged in
-  //     await pushNotifications.sendTokenToServer();
-
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text('Notifications enabled'),
-  //           backgroundColor: Appcolors.kprimarycolor,
-  //         ),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error enabling notifications: $e');
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text('Failed to enable notifications'),
-  //           backgroundColor: Colors.red,
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
-
-  // Future<void> _disableNotifications() async {
-  //   try {
-  //     final pushNotifications = PushNotifications.instance;
-
-  //     // Cancel all local notifications
-  //     await pushNotifications.cancelAllNotifications();
-
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text('Notifications disabled'),
-  //           backgroundColor: Appcolors.kprimarycolor,
-  //         ),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error disabling notifications: $e');
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text('Failed to disable notifications'),
-  //           backgroundColor: Colors.red,
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
+  // Load the saved language from SharedPreferences and current context
+  void _loadSavedLanguage() {
+    try {
+      // Get current app locale
+      final currentLocale = context.locale;
+      
+      // Find the matching language key based on locale code
+      String languageKey = 'English'; // default
+      
+      for (var entry in languages.entries) {
+        if (entry.value['code'] == currentLocale.languageCode) {
+          languageKey = entry.key;
+          break;
+        }
+      }
+      
+      // Only update if the language has actually changed to avoid unnecessary rebuilds
+      if (selectedLanguage != languageKey) {
+        setState(() {
+          selectedLanguage = languageKey;
+        });
+      }
+    } catch (e) {
+      print('Error loading saved language: $e');
+      // Keep default English if there's an error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -622,15 +553,6 @@ class _ScreenSettingsPageState extends State<ScreenSettingsPage> {
 
             ResponsiveSizedBox.height30,
 
-            // // Push Notifications Setting Card
-            // _buildSettingCard(
-            //   icon: Icons.notifications_outlined,
-            //   title: "settings notifications".tr(),
-            //   subtitle: 'Receive push notifications',
-            //   child: _buildNotificationToggle(),
-            // ),
-
-            // ResponsiveSizedBox.height40,
             _buildSectionTitle("settings account".tr()),
             const SizedBox(height: 16),
 
@@ -683,54 +605,6 @@ class _ScreenSettingsPageState extends State<ScreenSettingsPage> {
       ),
     );
   }
-
-  // Widget _buildNotificationToggle() {
-  //   return Container(
-  //     padding: const EdgeInsets.all(16),
-  //     decoration: BoxDecoration(
-  //       color: Appcolors.kbackgroundcolor,
-  //       borderRadius: BorderRadius.circular(8),
-  //       border: Border.all(color: Appcolors.kbordercolor),
-  //     ),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         Expanded(
-  //           child: Column(
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               Text(
-  //                 'Push Notifications',
-  //                 style: TextStyle(
-  //                   fontSize: 16,
-  //                   fontWeight: FontWeight.w600,
-  //                   color: Appcolors.kblackcolor,
-  //                 ),
-  //               ),
-  //               const SizedBox(height: 4),
-  //               Text(
-  //                 isPushNotificationsEnabled
-  //                   ? 'You will receive notifications'
-  //                   : 'Notifications are disabled',
-  //                 style: TextStyle(
-  //                   fontSize: 14,
-  //                   color: Appcolors.kblackcolor.withAlpha(153),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //         Switch.adaptive(
-  //           value: isPushNotificationsEnabled,
-  //           onChanged: _toggleNotifications,
-  //           activeColor: Appcolors.kprimarycolor,
-  //           inactiveThumbColor: Appcolors.kblackcolor.withAlpha(102),
-  //           inactiveTrackColor: Appcolors.kblackcolor.withAlpha(51),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildSectionTitle(String title) {
     return Text(
@@ -880,12 +754,14 @@ class _ScreenSettingsPageState extends State<ScreenSettingsPage> {
                   return Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () {
+                      onTap: () async {
                         setState(() {
                           selectedLanguage = entry.key;
                           isLanguageExpanded = false;
                         });
-                        context.read<LanguageCubit>().changeLanguage(
+                        
+                        // Change language using the cubit
+                        await context.read<LanguageCubit>().changeLanguage(
                           context,
                           Locale(entry.value['code']!),
                         );

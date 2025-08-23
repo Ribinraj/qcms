@@ -9,6 +9,7 @@ import 'package:qcms/data/complaintrequest_model.dart';
 import 'package:qcms/data/dashboard_model.dart';
 import 'package:qcms/data/departmentmodel.dart';
 import 'package:qcms/data/divisions_model.dart';
+import 'package:qcms/data/notification_model.dart';
 import 'package:qcms/data/quarters_model.dart';
 import 'package:qcms/widgets/custom_sharedpreferences.dart';
 
@@ -129,7 +130,7 @@ class Apprepo {
       // final token = await getUserToken();
       Response response = await dio.post(
         Endpoints.fetchcomplaintcategories,data:{
-    "complaintId": "1410"
+      "departmentId": "1"
 }
         //options: Options(headers: {'Authorization': token}),
       );
@@ -369,4 +370,49 @@ class Apprepo {
       );
     }
   }
+  ////////////////notifications////////////////////
+    Future<ApiResponse<List<NotificationModel>>> fetchnotifications() async {
+    try {
+      final token = await getUserToken();
+
+      log(token.toString());
+      Response response = await dio.get(
+        Endpoints.notifications,
+        options: Options(headers: {'Authorization': token}),
+      );
+
+      final responseData = response.data;
+      log('message:${responseData["status"].toString()}');
+      if (!responseData["error"] && responseData["status"] == 200) {
+        log(responseData['status'].toString());
+        final List<dynamic> notificationlist = responseData['data'];
+        List<NotificationModel> notification = notificationlist
+            .map((notification) => NotificationModel.fromJson(notification))
+            .toList();
+        return ApiResponse(
+          data: notification,
+          message: responseData['message'] ?? 'Success',
+          error: false,
+          status: responseData["status"],
+        );
+      } else {
+        return ApiResponse(
+          data: null,
+          message: responseData['message'] ?? 'Something went wrong',
+          error: true,
+          status: responseData["status"],
+        );
+      }
+    } on DioException catch (e) {
+      debugPrint(e.message);
+      log(e.toString());
+      return ApiResponse(
+        data: null,
+        message: 'Network or server error occurred',
+        error: true,
+        status: 500,
+      );
+    }
+  }
+
 }

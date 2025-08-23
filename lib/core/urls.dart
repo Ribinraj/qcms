@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Endpoints {
   static const baseUrl = 'https://qcomplaints.com/api/';
   static const login = 'consumer/login/mobile';
@@ -15,4 +17,5 @@ class Endpoints {
   static const fetchcomplaintcategories = 'consumer/masters/categories';
   static const requestComplaint = 'consumer/complaints/create';
   static const settoken = 'consumer/login/settoken';
+  static const notifications = 'consumer/login/notifications';
 }

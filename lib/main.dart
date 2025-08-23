@@ -171,6 +171,7 @@ import 'package:qcms/presentation/blocs/connectivity_bloc.dart/connectivity_bloc
 import 'package:qcms/presentation/blocs/fetch_complaint_categories/fetch_complaint_categories_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_complaintlists_bloc/fetch_complaintlists_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_departments_bloc/fetch_departments_bloc.dart';
+import 'package:qcms/presentation/blocs/fetch_notifications/fetch_notifications_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_profile_bloc/fetch_profile_bloc.dart';
 import 'package:qcms/presentation/blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_dashboard_bloc/fetch_dashboard_bloc.dart';
@@ -246,6 +247,7 @@ void main() async {
           BlocProvider(create: (context) => FetchDepartmentsBloc(repository: Apprepo())),
           BlocProvider(create: (context) => FetchComplaintCategoriesBloc(repository: Apprepo())),
           BlocProvider(create: (context) => RequestComplaintBloc(repository: Apprepo())),
+            BlocProvider(create: (context) => FetchNotificationsBloc(repository: Apprepo())),
           BlocProvider(create: (context) => LanguageCubit()),
         ],
         child: const MyApp(),
