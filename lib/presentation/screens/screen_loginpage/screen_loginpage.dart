@@ -34,6 +34,13 @@ class QCMSLoginScreenState extends State<ScreenLoginpage> {
 
   @override
   Widget build(BuildContext context) {
+      SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+    ),
+  );
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 240, 235),
 
