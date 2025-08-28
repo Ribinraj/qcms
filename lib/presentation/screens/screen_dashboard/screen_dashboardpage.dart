@@ -7,6 +7,7 @@ import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
 
 import 'package:qcms/presentation/blocs/fetch_dashboard_bloc/fetch_dashboard_bloc.dart';
+import 'package:qcms/presentation/blocs/fetch_profile_bloc/fetch_profile_bloc.dart';
 import 'package:qcms/widgets/custom_appbar.dart';
 import 'package:qcms/widgets/custom_routes.dart';
 
@@ -44,7 +45,7 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage>
     );
 
     context.read<FetchDashboardBloc>().add(FetchDashboardInitialEvent());
-
+    context.read<FetchProfileBloc>().add(FetchProfileInitialEvent());
     // Start animations sequence
     _startAnimationSequence();
   }
@@ -70,67 +71,75 @@ class _ScreenDashboardpageState extends State<ScreenDashboardpage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(title: "dashboard title".tr()),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: AnimationLimiter(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: AnimationConfiguration.toStaggeredList(
-              duration: const Duration(milliseconds: 600),
-              childAnimationBuilder: (widget) => SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(child: widget),
-              ),
-              children: [
-                // Header Section with custom animation
-                AnimatedBuilder(
-                  animation: _headerAnimationController,
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(
-                        0,
-                        50 * (1 - _headerAnimationController.value),
-                      ),
-                      child: Opacity(
-                        opacity: _headerAnimationController.value,
-                        child: _buildHeaderSection(),
-                      ),
-                    );
-                  },
+    return BlocListener<FetchProfileBloc, FetchProfileState>(
+      listener: (context, state) {
+        if (state is FetchProfileErrorState &&
+            state.message == "Expired token") {
+          CustomNavigation.pushNamedAndRemoveUntil(context, AppRouter.login);
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(title: "dashboard title".tr()),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: AnimationLimiter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: AnimationConfiguration.toStaggeredList(
+                duration: const Duration(milliseconds: 600),
+                childAnimationBuilder: (widget) => SlideAnimation(
+                  verticalOffset: 50.0,
+                  child: FadeInAnimation(child: widget),
                 ),
-
-                ResponsiveSizedBox.height40,
-
-                // Stats Cards Grid with staggered animation
-                BlocBuilder<FetchDashboardBloc, FetchDashboardState>(
-                  builder: (context, state) {
-                    if (state is FetchDashboardLoadingState) {
-                      return _buildLoadingGrid();
-                    } else if (state is FetchDashboardErrorState) {
-                      return AnimationConfiguration.synchronized(
-                        duration: const Duration(milliseconds: 600),
-                        child: SlideAnimation(
-                          verticalOffset: 50.0,
-                          child: FadeInAnimation(
-                            child: Center(child: Text(state.message)),
-                          ),
+                children: [
+                  // Header Section with custom animation
+                  AnimatedBuilder(
+                    animation: _headerAnimationController,
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(
+                          0,
+                          50 * (1 - _headerAnimationController.value),
+                        ),
+                        child: Opacity(
+                          opacity: _headerAnimationController.value,
+                          child: _buildHeaderSection(),
                         ),
                       );
-                    } else if (state is FetchDashboardSuccessState) {
-                      return _buildStatsGrid(state);
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  },
-                ),
+                    },
+                  ),
 
-                ResponsiveSizedBox.height40,
+                  ResponsiveSizedBox.height40,
 
-                // Action Buttons with animation
-                _buildActionButtons(),
-              ],
+                  // Stats Cards Grid with staggered animation
+                  BlocBuilder<FetchDashboardBloc, FetchDashboardState>(
+                    builder: (context, state) {
+                      if (state is FetchDashboardLoadingState) {
+                        return _buildLoadingGrid();
+                      } else if (state is FetchDashboardErrorState) {
+                        return AnimationConfiguration.synchronized(
+                          duration: const Duration(milliseconds: 600),
+                          child: SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: Center(child: Text(state.message)),
+                            ),
+                          ),
+                        );
+                      } else if (state is FetchDashboardSuccessState) {
+                        return _buildStatsGrid(state);
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
+
+                  ResponsiveSizedBox.height40,
+
+                  // Action Buttons with animation
+                  _buildActionButtons(),
+                ],
+              ),
             ),
           ),
         ),

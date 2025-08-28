@@ -98,6 +98,7 @@ import 'package:qcms/core/constants.dart';
 import 'package:qcms/core/responsiveutils.dart';
 import 'package:qcms/data/complaint_categorymodel.dart';
 import 'package:qcms/data/complaintrequest_model.dart';
+import 'package:qcms/domain/controllers/review_services.dart';
 import 'package:qcms/presentation/blocs/fetch_complaint_categories/fetch_complaint_categories_bloc.dart';
 
 import 'package:qcms/presentation/blocs/fetch_departments_bloc/fetch_departments_bloc.dart';
@@ -126,6 +127,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
   DateTime? selectedDateTime;
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
+  
   //String? imagerequired;
 
   // final List<String> departments = ['mysore', 'calicut', 'cochin'];
@@ -136,8 +138,58 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
     // TODO: implement initState
     super.initState();
     context.read<FetchDepartmentsBloc>().add(FetchDepartmentsInitialEvent());
-    context.read<FetchComplaintCategoriesBloc>().add(
-      FetchComplaintCategoriesInitialEvent(),
+
+  }
+ void _onDepartmentChanged(DropdownItem? value) {
+    setState(() {
+      // If division changes, clear the quarters selection
+      if (selectedDepartment?.id != value?.id) {
+        selectedComplaintCategory = null;
+      }
+      selectedDepartment = value;
+    });
+
+    if (value != null) {
+      print('Selected Division ID: ${value.id}');
+      print('Selected Division Name: ${value.display}');
+     
+      context.read<FetchComplaintCategoriesBloc>().add(
+      FetchComplaintCategoriesInitialEvent(departmentId: value.id),
+    );
+    }
+  }
+    Widget _buildDisabledComplaintCategory() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade400, width: 1.5),
+        ),
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                'Please select Department first',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey.shade600,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.grey.shade400,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -267,17 +319,18 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                           items: departmentItems,
                           enableSearch: true,
                           searchHintText:"Search departments...",
-                          onChanged: (value) {
-                            setState(() {
-                              selectedDepartment = value;
-                            });
-                            if (value != null) {
-                              print('Selected departments ID: ${value.id}');
-                              print(
-                                'Selected departments Name: ${value.display}',
-                              );
-                            }
-                          },
+                          onChanged: _onDepartmentChanged,
+                          // onChanged: (value) {
+                          //   setState(() {
+                          //     selectedDepartment = value;
+                          //   });
+                          //   if (value != null) {
+                          //     print('Selected departments ID: ${value.id}');
+                          //     print(
+                          //       'Selected departments Name: ${value.display}',
+                          //     );
+                          //   }
+                          // },
                         );
                       } else {
                         return SizedBox.shrink();
@@ -300,6 +353,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                     ],
                   ),
                   ResponsiveSizedBox.height5,
+                  selectedDepartment==null?_buildDisabledComplaintCategory():
                   BlocBuilder<
                     FetchComplaintCategoriesBloc,
                     FetchComplaintCategoriesState
@@ -471,7 +525,19 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                     message: state.message,
                     type: SnackbarType.success,
                   );
-                  navigateToMainPageNamed(context, 2);
+                     Future.delayed(Duration(milliseconds: 1500), () async {
+        await ReviewManager.onComplaintSuccess(
+          context,
+          triggerAfterCount: 1, // Show after 3 successful complaints
+          daysBetweenPrompts: 30, // Don't show more than once every 30 days
+          appStoreId: '6751338668', // Replace with your actual iOS App Store ID
+          // microsoftStoreId: 'YOUR_MICROSOFT_STORE_ID', // Only if you support Windows
+        );
+      });
+      
+      // Navigate to main page
+      navigateToMainPageNamed(context, 2);
+              
                 } else if (state is RequestComplaintErrorState) {
                   CustomSnackbar.show(
                     context,

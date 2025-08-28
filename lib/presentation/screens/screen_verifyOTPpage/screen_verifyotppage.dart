@@ -212,14 +212,18 @@ class _ScreenVerifyOtpState extends State<ScreenVerifyOtp> {
   Widget _buildVerifyButton() {
     return BlocConsumer<VerifyOtpBloc, VerifyOtpState>(
       listener: (context, state) async {
+
         if (state is VerifyOtpSuccessState) {
-           final pushNotifications = PushNotifications.instance;
-           await pushNotifications.init();
-          await PushNotifications().sendTokenToServer();
-          CustomNavigation.pushReplacementNamedWithTransition(
+                CustomNavigation.pushReplacementNamedWithTransition(
             context,
             AppRouter.mainpage,
           );
+          Future.microtask(() async {
+    final pushNotifications = PushNotifications.instance;
+    await pushNotifications.init();
+    await PushNotifications().sendTokenToServer();
+  });
+    
         } else if (state is VerifyOtpErrorState) {
           CustomSnackbar.show(
             context,

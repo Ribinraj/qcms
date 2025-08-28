@@ -235,6 +235,7 @@
 // }
 //////////////////////////////////////////
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:qcms/core/appconstants.dart';
 import 'package:qcms/core/colors.dart';
@@ -389,6 +390,13 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+        SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light, // White icons
+        statusBarBrightness: Brightness.dark, // iOS
+      ),
+    );
     return Scaffold(
       backgroundColor: Appcolors.kbackgroundcolor,
       body: AnimatedBuilder(

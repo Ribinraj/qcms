@@ -4,7 +4,7 @@
     
     <!-- REQUIRED: Firebase Cloud Messaging -->
     <uses-permission android:name="android.permission.INTERNET" />
-    
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <!-- REQUIRED: For Android 13+ notification permission -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     

@@ -25,7 +25,7 @@ class FetchComplaintCategoriesBloc
   ) async {
     emit(FetchComplaintCategoriesLoadingState());
     try {
-      final response = await repository.fetchcomplaintcategories();
+      final response = await repository.fetchcomplaintcategories(departmentId: event.departmentId);
       if (!response.error && response.status == 200) {
         emit(FetchComplaintCategoriesSuccessState(complaints: response.data!));
       } else {

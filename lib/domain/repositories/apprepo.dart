@@ -86,10 +86,10 @@ class Apprepo {
   ///////////// Fetch fetchdepartments/////////////
   Future<ApiResponse<List<DepartmentModel>>> fetchdepartments() async {
     try {
-      // final token = await getUserToken();
+      final token = await getUserToken();
       Response response = await dio.get(
         Endpoints.fetchdepartments,
-        //options: Options(headers: {'Authorization': token}),
+        options: Options(headers: {'Authorization': token}),
       );
 
       final responseData = response.data;
@@ -125,14 +125,14 @@ class Apprepo {
     }
   }
  ///////////// Fetch complaintcategorys/////////////
-  Future<ApiResponse<List<ComplaintCategorymodel>>> fetchcomplaintcategories() async {
+  Future<ApiResponse<List<ComplaintCategorymodel>>> fetchcomplaintcategories({required String departmentId}) async {
     try {
-      // final token = await getUserToken();
+       final token = await getUserToken();
       Response response = await dio.post(
         Endpoints.fetchcomplaintcategories,data:{
-      "departmentId": "1"
-}
-        //options: Options(headers: {'Authorization': token}),
+      "departmentId": departmentId
+},
+        options: Options(headers: {'Authorization': token}),
       );
 
       final responseData = response.data;

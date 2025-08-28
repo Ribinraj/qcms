@@ -204,13 +204,20 @@ void main() async {
       provisional: false,
     );
   }
+  //   SystemChrome.setSystemUIOverlayStyle(
+  //   const SystemUiOverlayStyle(
+  //     statusBarColor: Colors.transparent,
+  //     statusBarIconBrightness: Brightness.dark,
+  //     statusBarBrightness: Brightness.light,
+  //   ),
+  // );
     final prefs = await SharedPreferences.getInstance();
   final langCode = prefs.getString('langCode') ?? 'en';
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
     ),
   );
   await SystemChrome.setPreferredOrientations([
@@ -279,6 +286,13 @@ class MyApp extends StatelessWidget {
             ),
           ),
           theme: ThemeData(
+                  appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light, // white icons
+            statusBarBrightness: Brightness.dark, // iOS
+          ),
+        ),
             fontFamily: 'Helvetica',
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
