@@ -8,8 +8,6 @@
 // import 'package:qcms/widgets/custom_appbar.dart';
 // import 'package:qcms/widgets/logout_utils.dart';
 
-
-
 // class ScreenSettingsPage extends StatefulWidget {
 //   const ScreenSettingsPage({super.key});
 
@@ -27,8 +25,6 @@
 //     'Hindi': {'code': 'hi', 'display': 'हिन्दी'},
 //     'Kannada': {'code': 'kn', 'display': 'ಕನ್ನಡ'},
 //   };
-
-
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -160,7 +156,6 @@
 //       ),
 //     );
 //   }
-
 
 //   Widget _buildSectionTitle(String title) {
 //     return Text(
@@ -426,6 +421,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
+import 'package:qcms/widgets/custom_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:qcms/presentation/blocs/language_cubit.dart';
@@ -461,17 +457,17 @@ class _ScreenSettingsPageState extends State<ScreenSettingsPage> {
     try {
       // Get current app locale
       final currentLocale = context.locale;
-      
+
       // Find the matching language key based on locale code
       String languageKey = 'English'; // default
-      
+
       for (var entry in languages.entries) {
         if (entry.value['code'] == currentLocale.languageCode) {
           languageKey = entry.key;
           break;
         }
       }
-      
+
       // Only update if the language has actually changed to avoid unnecessary rebuilds
       if (selectedLanguage != languageKey) {
         setState(() {
@@ -598,8 +594,60 @@ class _ScreenSettingsPageState extends State<ScreenSettingsPage> {
                 ),
               ),
             ),
-
-            const SizedBox(height: 32),
+            ResponsiveSizedBox.height10,
+            Row(
+              children: [
+                Spacer(),
+                InkWell(
+                  onTap: () {
+                    CustomNavigation.pushNamedWithTransition(
+                      context,
+                      AppRouter.deleteAccount,
+                    );
+                  },
+                  child: TextStyles.medium(
+                    text: 'Delete Account?',
+                    weight: FontWeight.bold,
+                    color: Appcolors.ksecondarycolor,
+                  ),
+                ),
+              ],
+            ),
+            // ResponsiveSizedBox.height50,
+            // Row(
+            //   children: [
+            //     Spacer(),
+            //     OutlinedButton(
+            //       onPressed: () {
+            //         CustomNavigation.pushNamedWithTransition(
+            //           context,
+            //           AppRouter.deleteAccount,
+            //         );
+            //       },
+            //       style: OutlinedButton.styleFrom(
+            //         side: const BorderSide(
+            //           color: Colors.red, // outline color
+            //           width: .5, // border thickness
+            //         ),
+            //         foregroundColor: Colors.red,
+            //         backgroundColor: const Color.fromARGB(255, 249, 217, 215),
+            //         padding: const EdgeInsets.symmetric(
+            //           horizontal: 10,
+            //           vertical: 5,
+            //         ),
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(
+            //             10,
+            //           ), // rounded corners
+            //         ),
+            //       ),
+            //       child: const Text(
+            //         'Delete Account',
+            //         style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),
@@ -759,7 +807,7 @@ class _ScreenSettingsPageState extends State<ScreenSettingsPage> {
                           selectedLanguage = entry.key;
                           isLanguageExpanded = false;
                         });
-                        
+
                         // Change language using the cubit
                         await context.read<LanguageCubit>().changeLanguage(
                           context,

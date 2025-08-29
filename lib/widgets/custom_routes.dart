@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qcms/data/complaint_listmodel.dart';
 import 'package:qcms/presentation/blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
 import 'package:qcms/presentation/screens/screen_complaintdetails/screen_complaintdetails_page.dart';
+import 'package:qcms/presentation/screens/screen_deleteaccount/screen_deleteaccount.dart';
 import 'package:qcms/presentation/screens/screen_disclaimerpage/screen_disclaimerpage.dart';
 import 'package:qcms/presentation/screens/screen_loginpage/screen_loginpage.dart';
 import 'package:qcms/presentation/screens/screen_mainpage/screen_mainpage.dart';
@@ -29,6 +30,7 @@ class AppRouter {
   static const String splashpage = '/splashpage';
   static const String disclaimer = '/disclaimer';
   static const String notification = '/notification';
+  static const String deleteAccount = '/deleteaccount';
 
   // Single method to generate all routes
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -106,6 +108,11 @@ class AppRouter {
       case notification:
         return MaterialPageRoute(
           builder: (_) => NotificationPage(), // Replace with your actual screen
+          settings: settings,
+        );
+              case deleteAccount:
+        return MaterialPageRoute(
+          builder: (_) => DeleteAccountPage(), // Replace with your actual screen
           settings: settings,
         );
       default:
