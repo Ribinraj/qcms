@@ -168,6 +168,7 @@ import 'package:qcms/domain/repositories/loginrepo.dart';
 import 'package:qcms/firebase_options.dart';
 import 'package:qcms/presentation/blocs/cancel_complaint_bloc/cancel_complaint_bloc.dart';
 import 'package:qcms/presentation/blocs/connectivity_bloc.dart/connectivity_bloc.dart';
+import 'package:qcms/presentation/blocs/delete_account_bloc/delete_account_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_complaint_categories/fetch_complaint_categories_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_complaintlists_bloc/fetch_complaintlists_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_departments_bloc/fetch_departments_bloc.dart';
@@ -255,6 +256,7 @@ void main() async {
           BlocProvider(create: (context) => FetchComplaintCategoriesBloc(repository: Apprepo())),
           BlocProvider(create: (context) => RequestComplaintBloc(repository: Apprepo())),
             BlocProvider(create: (context) => FetchNotificationsBloc(repository: Apprepo())),
+               BlocProvider(create: (context) => DeleteAccountBloc(repository: LoginRepo())),
           BlocProvider(create: (context) => LanguageCubit()),
         ],
         child: const MyApp(),

@@ -18,4 +18,5 @@ class Endpoints {
   static const requestComplaint = 'consumer/complaints/create';
   static const settoken = 'consumer/login/settoken';
   static const notifications = 'consumer/login/notifications';
+  static const deleteaccount = 'consumer/login/deleteaccount';
 }

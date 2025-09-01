@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:qcms/core/colors.dart';
 import 'package:qcms/core/constants.dart';
+import 'package:qcms/presentation/blocs/delete_account_bloc/delete_account_bloc.dart';
 import 'package:qcms/presentation/blocs/fetch_profile_bloc/fetch_profile_bloc.dart';
 import 'package:qcms/widgets/custom_routes.dart';
 
 import 'package:qcms/data/profilemodel.dart';
+import 'package:qcms/widgets/custom_snackbar.dart';
 
 class DeleteAccountPage extends StatefulWidget {
   const DeleteAccountPage({super.key});
@@ -97,7 +100,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
-    required String? Function(String?) validator,
+    String? Function(String?)? validator,
     TextInputType? keyboardType,
     int maxLines = 1,
     IconData? prefixIcon,
@@ -224,12 +227,12 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                               label: "Occupant Name",
                               prefixIcon: Icons.person_outline,
                               enabled: false, // Make it readonly
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please enter occupant name";
-                                }
-                                return null;
-                              },
+                              // validator: (value) {
+                              //   if (value == null || value.isEmpty) {
+                              //     return "Please enter occupant name";
+                              //   }
+                              //   return null;
+                              // },
                             ),
                             const SizedBox(height: 20),
 
@@ -240,12 +243,12 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                               prefixIcon: Icons.phone_outlined,
                               keyboardType: TextInputType.number,
                               enabled: false, // Make it readonly
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please enter mobile number";
-                                }
-                                return null;
-                              },
+                              // validator: (value) {
+                              //   if (value == null || value.isEmpty) {
+                              //     return "Please enter mobile number";
+                              //   }
+                              //   return null;
+                              // },
                             ),
                             const SizedBox(height: 20),
 
@@ -307,49 +310,99 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                                   ),
                                 ],
                               ),
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    final shouldDelete =
-                                        await _showDeleteConfirmation();
-                                    if (shouldDelete) {
-                                      print('Account deletion confirmed');
-                                      print('Name: ${_nameController.text}');
-                                      print(
-                                        'Mobile: ${_numberController.text}',
+                              child:
+                                  BlocConsumer<
+                                    DeleteAccountBloc,
+                                    DeleteAccountState
+                                  >(
+                                    listener: (context, state) {
+                                      if (state is DeleteAccountSuccessState) {
+                                        CustomSnackbar.show(
+                                          context,
+                                          message: state.message,
+                                          type: SnackbarType.success,
+                                        );
+                                        navigateToMainPageNamed(context, 0);
+                                      } else if (state
+                                          is DeleteAccountErrorState) {
+                                        CustomSnackbar.show(
+                                          context,
+                                          message: state.message,
+                                          type: SnackbarType.error,
+                                        );
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      if (state is DeleteAccountLoadingState) {
+                                        return ElevatedButton(
+                                          onPressed: () {},
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                Colors.red.shade600,
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            elevation: 0,
+                                          ),
+                                          child: SpinKitWave(
+                                            size: 15,
+                                            color: Appcolors.kwhitecolor,
+                                          ),
+                                        );
+                                      }
+                                      return ElevatedButton(
+                                        onPressed: () async {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            context
+                                                .read<DeleteAccountBloc>()
+                                                .add(
+                                                  DeleteButtonClickEvent(
+                                                    reason:
+                                                        _reasonController.text,
+                                                  ),
+                                                );
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red.shade600,
+                                          foregroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          elevation: 0,
+                                        ),
+                                        child: const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.delete_forever,
+                                              size: 20,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              "Delete Account",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       );
-                                      print(
-                                        'Reason: ${_reasonController.text}',
-                                      );
-                                    }
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red.shade600,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
+                                    },
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.delete_forever, size: 20),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      "Delete Account",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                             ),
                             // Show loading indicator while fetching profile
                             if (state is FetchProfileLoadingState)

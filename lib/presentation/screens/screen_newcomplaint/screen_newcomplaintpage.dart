@@ -320,17 +320,7 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                           enableSearch: true,
                           searchHintText:"Search departments...",
                           onChanged: _onDepartmentChanged,
-                          // onChanged: (value) {
-                          //   setState(() {
-                          //     selectedDepartment = value;
-                          //   });
-                          //   if (value != null) {
-                          //     print('Selected departments ID: ${value.id}');
-                          //     print(
-                          //       'Selected departments Name: ${value.display}',
-                          //     );
-                          //   }
-                          // },
+               
                         );
                       } else {
                         return SizedBox.shrink();
@@ -525,16 +515,12 @@ class _ScreenNewcomplaintpageState extends State<ScreenNewcomplaintpage> {
                     message: state.message,
                     type: SnackbarType.success,
                   );
-                     Future.delayed(Duration(milliseconds: 1500), () async {
-        await ReviewManager.onComplaintSuccess(
-          context,
-          triggerAfterCount: 1, // Show after 3 successful complaints
-          daysBetweenPrompts: 30, // Don't show more than once every 30 days
-          appStoreId: '6751338668', // Replace with your actual iOS App Store ID
-          // microsoftStoreId: 'YOUR_MICROSOFT_STORE_ID', // Only if you support Windows
+     // Call review after successful complaint
+      Future.delayed(Duration(milliseconds: 1500), () async {
+        await SimpleReviewManager.requestReview(
+          appStoreId: '6751338668',
         );
       });
-      
       // Navigate to main page
       navigateToMainPageNamed(context, 2);
               
