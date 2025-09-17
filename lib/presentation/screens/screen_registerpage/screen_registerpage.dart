@@ -449,22 +449,7 @@ if (!mobileRegex.hasMatch(mobile)) {
   return;
 }
     context.read<RegisterQuartersBloc>().add(RegisterQuartersButtonClickEvent(quarters: RegisterNewquartersModel(cityId:int.parse( selectedDivision!.id), quarterId: int.parse(selectedQuarters!.id), quarterNo: flatnumberController.text, quarterType: selectedQuartersType!, quarterRoofType:selectedQuartersRoofType!, quarterStatus: selectedQuartersStatus!, occupantName: occupantnameController.text, occupantMobile: occupantmobilenumberController.text, occupantDesignation: occupantDesignationController.text)));
-    // All validations passed, proceed with registration
-    // print('=== REGISTRATION DATA ===');
-    // print('Division ID: ${selectedDivision!.id}');
-    // print('Division Name: ${selectedDivision!.display}');
-    // print('Quarters ID: ${selectedQuarters!.id}');
-    // print('Quarters Name: ${selectedQuarters!.display}');
-    // print('Flat Number: ${flatnumberController.text.trim()}');
-    // print('Quarters Type: $selectedQuartersType');
-    // print('Quarters Roof Type: $selectedQuartersRoofType');
-    // print('Quarters Status: $selectedQuartersStatus');
-    // print('Occupant Name: ${occupantnameController.text.trim()}');
-    // print('Occupant Mobile: ${occupantmobilenumberController.text.trim()}');
-    // print('Occupant Designation: ${occupantDesignationController.text.trim()}');
-    // print('========================');
 
-    // Add your actual registration API call here
    
   }
 

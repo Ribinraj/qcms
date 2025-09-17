@@ -80,7 +80,12 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(true),
+                  onPressed: () {
+                    context.read<DeleteAccountBloc>().add(
+                      DeleteButtonClickEvent(reason: _reasonController.text),
+                    );
+                  },
+                  //onPressed: () => Navigator.of(context).pop(true),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red.shade600,
                     foregroundColor: Colors.white,
@@ -202,7 +207,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                 padding: const EdgeInsets.all(15),
                 child: Column(
                   children: [
-                    ResponsiveSizedBox.height20,
+                         ResponsiveSizedBox.height20,
                     Container(
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
@@ -234,7 +239,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                               //   return null;
                               // },
                             ),
-                            const SizedBox(height: 20),
+                                ResponsiveSizedBox.height20,
 
                             // Occupant Number (disabled/readonly)
                             _buildTextField(
@@ -250,7 +255,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                               //   return null;
                               // },
                             ),
-                            const SizedBox(height: 20),
+                               ResponsiveSizedBox.height20,
 
                             // Reason
                             _buildTextField(
@@ -265,7 +270,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 32),
+                                ResponsiveSizedBox.height30,
 
                             // Warning Message
                             Container(
@@ -296,7 +301,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 24),
+                                 ResponsiveSizedBox.height20,
 
                             // Delete Account Button
                             Container(
@@ -359,14 +364,13 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                                         onPressed: () async {
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            context
-                                                .read<DeleteAccountBloc>()
-                                                .add(
-                                                  DeleteButtonClickEvent(
-                                                    reason:
-                                                        _reasonController.text,
-                                                  ),
-                                                );
+                                            _showDeleteConfirmation();
+                                          } else {
+                                            CustomSnackbar.show(
+                                              context,
+                                              message: 'Fill required fields',
+                                              type: SnackbarType.error,
+                                            );
                                           }
                                         },
                                         style: ElevatedButton.styleFrom(
